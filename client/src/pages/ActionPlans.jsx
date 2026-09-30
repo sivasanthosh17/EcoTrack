@@ -641,10 +641,17 @@ const ActionPlans = () => {
 
       {/* Action Plans Directory */}
       {loading ? (
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>Loading climate action plans...</p>
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          <div className="spinner" />
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Loading climate action plans...</p>
+        </div>
       ) : plans.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '2.5rem' }}>
-          <p style={{ color: 'var(--text-muted)' }}>No climate action plans match your criteria.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon">📋</div>
+          <h3>No Climate Action Plans Found</h3>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+            No climate action plan frameworks match your current search parameters.
+          </p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>

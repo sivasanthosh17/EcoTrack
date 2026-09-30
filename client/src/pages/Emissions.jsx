@@ -539,15 +539,22 @@ const Emissions = () => {
       </div>
 
       {/* Emission Records Data Table */}
-      <div className="card" style={{ overflowX: 'auto' }}>
+      <div className="table-responsive">
         {loading ? (
-          <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>Loading emission logs...</p>
+          <div style={{ textAlign: 'center', padding: '3rem' }}>
+            <div className="spinner" />
+            <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Loading emission logs...</p>
+          </div>
         ) : emissions.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '2.5rem' }}>
-            <p style={{ color: 'var(--text-muted)' }}>No emission logs match your filter criteria.</p>
+          <div className="empty-state">
+            <div className="empty-state-icon">💨</div>
+            <h3>No Emission Logs Found</h3>
+            <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+              No emission activity records match your current filter parameters.
+            </p>
           </div>
         ) : (
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.92rem', textAlign: 'left' }}>
+          <table className="table">
             <thead>
               <tr style={{ borderBottom: '1px solid var(--border-color)', color: 'var(--text-muted)' }}>
                 <th style={{ padding: '0.75rem 0.5rem' }}>Source</th>

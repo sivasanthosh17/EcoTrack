@@ -680,10 +680,17 @@ const KPIs = () => {
 
       {/* KPI Directory Grid */}
       {loading ? (
-        <p style={{ color: 'var(--text-muted)', textAlign: 'center', padding: '2rem' }}>Loading sustainability KPIs...</p>
+        <div style={{ textAlign: 'center', padding: '3rem' }}>
+          <div className="spinner" />
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.5rem' }}>Loading sustainability KPIs...</p>
+        </div>
       ) : kpis.length === 0 ? (
-        <div className="card" style={{ textAlign: 'center', padding: '2.5rem' }}>
-          <p style={{ color: 'var(--text-muted)' }}>No sustainability KPIs match your filter criteria.</p>
+        <div className="empty-state">
+          <div className="empty-state-icon">🎯</div>
+          <h3>No Sustainability KPIs Found</h3>
+          <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
+            No sustainability KPIs match your current filter parameters.
+          </p>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(330px, 1fr))', gap: '1.25rem' }}>
