@@ -16,7 +16,8 @@ export const connectDB = async () => {
     const conn = await mongoose.connect(primaryURI, {
       serverSelectionTimeoutMS: 2000
     });
-    console.log(`[Database] Connected to external MongoDB Server: ${conn.connection.host}`);
+    console.log(`[Database] Connected to MongoDB Server: ${conn.connection.host}`);
+    await seedDemoAccounts();
     return true;
   } catch (primaryError) {
     console.warn(`[Database Info] Local/External MongoDB not detected (${primaryError.message}).`);
@@ -42,7 +43,7 @@ export const connectDB = async () => {
 };
 
 /**
- * Helper to auto-seed demo accounts in memory DB
+ * Helper to auto-seed demo accounts in database if not already existing
  */
 const seedDemoAccounts = async () => {
   try {

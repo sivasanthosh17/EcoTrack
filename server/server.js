@@ -7,6 +7,7 @@ import { connectDB, checkDbConnection } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import organizationRoutes from './routes/organizationRoutes.js';
 import departmentRoutes from './routes/departmentRoutes.js';
+import emissionRoutes from './routes/emissionRoutes.js';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use('/api/auth', checkDbConnection, authRoutes);
 app.use('/api/organization', checkDbConnection, organizationRoutes);
 app.use('/api/departments', checkDbConnection, departmentRoutes);
+app.use('/api/emissions', checkDbConnection, emissionRoutes);
 
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {

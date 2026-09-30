@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Organization from './pages/Organization';
+import Emissions from './pages/Emissions';
 import PlaceholderPage from './pages/PlaceholderPage';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -30,23 +31,20 @@ function App() {
             } 
           />
           <Route 
+            path="/emissions" 
+            element={
+              <ProtectedRoute>
+                <Emissions />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/dashboard" 
             element={
               <ProtectedRoute>
                 <PlaceholderPage 
                   title="Analytics Dashboard" 
                   description="Real-time KPI metrics, Scope breakdowns, and emission trend charts will be available here." 
-                />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/emissions" 
-            element={
-              <ProtectedRoute>
-                <PlaceholderPage 
-                  title="Emission Logs & Accounting" 
-                  description="Form entries for Scope 1, 2, and 3 activity logs, auto CO2e calculations, and log tables." 
                 />
               </ProtectedRoute>
             } 
