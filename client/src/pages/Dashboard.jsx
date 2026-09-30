@@ -228,7 +228,7 @@ const Dashboard = () => {
 
   return (
     <div>
-      {/* Title & Live Status Banner */}
+      {/* Dashboard heading and controls */}
       <div className="dashboard-header">
         <div>
           <div className="dashboard-eyebrow">{organizationName}</div>
@@ -252,9 +252,6 @@ const Dashboard = () => {
           <button className="btn btn-secondary btn-sm" onClick={fetchDashboardStats}>
             Refresh
           </button>
-          <span className="status-pill online">
-            <span className="pulse-dot"></span> Live DB Sync
-          </span>
         </div>
       </div>
 
