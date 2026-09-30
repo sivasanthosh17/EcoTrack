@@ -9,6 +9,7 @@
     "dev": "nodemon server.js",
     "seed": "node seed.js",
     "seed:gcc": "node seed-gcc.js",
+    "seed:gcc-demo": "node seed-gcc-demo.js",
     "test": "node --test"
   },
   "keywords": [],
