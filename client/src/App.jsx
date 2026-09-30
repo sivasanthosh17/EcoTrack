@@ -9,6 +9,7 @@ import Emissions from './pages/Emissions';
 import Projects from './pages/Projects';
 import KPIs from './pages/KPIs';
 import ActionPlans from './pages/ActionPlans';
+import Reports from './pages/Reports';
 import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -62,6 +63,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ActionPlans />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/reports" 
+            element={
+              <ProtectedRoute>
+                <Reports />
               </ProtectedRoute>
             } 
           />
