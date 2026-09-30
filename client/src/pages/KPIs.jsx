@@ -10,12 +10,12 @@ const STATUS_BADGES = {
 };
 
 const CATEGORY_ICONS = {
-  Energy: '⚡',
-  Water: '💧',
-  Waste: '♻️',
-  Transportation: '🚗',
-  Emissions: '🏭',
-  'Renewable Energy': '☀️'
+  Energy: 'E',
+  Water: 'W',
+  Waste: 'R',
+  Transportation: 'T',
+  Emissions: 'G',
+  'Renewable Energy': 'S'
 };
 
 const KPIs = () => {
@@ -616,7 +616,7 @@ const KPIs = () => {
             <input
               type="text"
               className="form-input"
-              placeholder="🔍 Search KPI name..."
+              placeholder="Search KPI name..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             />
@@ -686,7 +686,7 @@ const KPIs = () => {
         </div>
       ) : kpis.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">🎯</div>
+          <div className="empty-state-icon">—</div>
           <h3>No Sustainability KPIs Found</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
             No sustainability KPIs match your current filter parameters.
@@ -696,15 +696,14 @@ const KPIs = () => {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(330px, 1fr))', gap: '1.25rem' }}>
           {kpis.map((k) => {
             const badge = STATUS_BADGES[k.status] || STATUS_BADGES['Pending Data'];
-            const icon = CATEGORY_ICONS[k.category] || '📊';
+            const icon = CATEGORY_ICONS[k.category] || '';
 
             return (
               <div key={k._id} className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.5rem' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                      <span style={{ fontSize: '1.2rem' }}>{icon}</span>
-                      <h3 style={{ fontSize: '1.15rem', lineHeight: '1.3' }}>{k.kpiName}</h3>
+                      <h3 style={{ fontSize: '1.05rem', lineHeight: '1.3' }}>{k.kpiName}</h3>
                     </div>
                     <span
                       className="status-pill"
@@ -716,8 +715,8 @@ const KPIs = () => {
 
                   <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', fontSize: '0.8rem' }}>
                     <span className="brand-badge">{k.category}</span>
-                    <span style={{ color: 'var(--accent)', fontWeight: 600 }}>🏢 {k.department}</span>
-                    <span style={{ color: 'var(--text-dim)' }}>📅 {k.reportingFrequency}</span>
+                    <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{k.department}</span>
+                    <span style={{ color: 'var(--text-dim)' }}>{k.reportingFrequency}</span>
                   </div>
 
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
@@ -755,7 +754,7 @@ const KPIs = () => {
                     className="btn btn-secondary btn-sm"
                     onClick={() => handleOpenHistory(k)}
                   >
-                    📜 History
+                    History
                   </button>
                   {isAdmin && (
                     <>

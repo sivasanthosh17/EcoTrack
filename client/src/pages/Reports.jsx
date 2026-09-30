@@ -136,13 +136,13 @@ const Reports = () => {
             className="btn btn-primary"
             onClick={() => window.print()}
           >
-            🖨️ Print Report
+            Print Report
           </button>
         </div>
 
         <div className="card">
           <h3 className="card-title" style={{ fontSize: '1.05rem', marginBottom: '1rem' }}>
-            🔍 Customize Report Parameters
+            Customize Report Parameters
           </h3>
           <form onSubmit={handleFilterSubmit}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', alignItems: 'end' }}>
@@ -214,8 +214,7 @@ const Reports = () => {
         {/* Report Official Header */}
         <div style={{ borderBottom: '2px solid #0d131a', paddingBottom: '1.5rem', marginBottom: '2rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap' }}>
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '0.4rem' }}>
-              <span style={{ fontSize: '1.6rem' }}>🌱</span>
+            <div style={{ marginBottom: '0.4rem' }}>
               <h1 style={{ fontSize: '1.8rem', color: '#0f172a', fontWeight: 800 }}>
                 {organization?.name || 'EcoTrack City Municipality'}
               </h1>

@@ -529,7 +529,7 @@ const Projects = () => {
             <input
               type="text"
               className="form-input"
-              placeholder="🔍 Search project name or notes..."
+              placeholder="Search project name or notes..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             />
@@ -582,7 +582,7 @@ const Projects = () => {
         </div>
       ) : projects.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">📉</div>
+          <div className="empty-state-icon">—</div>
           <h3>No Carbon Reduction Projects Found</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
             No carbon reduction projects match your current filter criteria.
@@ -607,7 +607,7 @@ const Projects = () => {
                   </div>
 
                   <div style={{ fontSize: '0.85rem', color: 'var(--accent)', fontWeight: 600, marginBottom: '0.75rem' }}>
-                    🏢 {p.department}
+                    {p.department}
                   </div>
 
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>
@@ -665,7 +665,7 @@ const Projects = () => {
                     style={{ flex: 1 }}
                     onClick={() => handleOpenProgress(p)}
                   >
-                    ⚡ Progress
+                    Progress
                   </button>
                   <button
                     className="btn btn-secondary btn-sm"

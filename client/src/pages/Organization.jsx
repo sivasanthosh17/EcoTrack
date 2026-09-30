@@ -249,20 +249,20 @@ const Organization = () => {
           className={`btn ${activeTab === 'profile' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setActiveTab('profile')}
         >
-          🏛️ Organization Profile
+          Organization Profile
         </button>
         <button
           className={`btn ${activeTab === 'departments' ? 'btn-primary' : 'btn-secondary'}`}
           onClick={() => setActiveTab('departments')}
         >
-          🏢 Departments ({departments.length})
+          Departments ({departments.length})
         </button>
         {isAdmin && (
           <button
             className={`btn ${activeTab === 'assignment' ? 'btn-primary' : 'btn-secondary'}`}
             onClick={() => setActiveTab('assignment')}
           >
-            👤 Assign Personnel
+            Assign Personnel
           </button>
         )}
       </div>

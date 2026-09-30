@@ -480,7 +480,7 @@ const Emissions = () => {
             <input
               type="text"
               className="form-input"
-              placeholder="🔍 Search notes or dept..."
+              placeholder="Search notes or dept..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             />
@@ -547,7 +547,7 @@ const Emissions = () => {
           </div>
         ) : emissions.length === 0 ? (
           <div className="empty-state">
-            <div className="empty-state-icon">💨</div>
+            <div className="empty-state-icon">—</div>
             <h3>No Emission Logs Found</h3>
             <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
               No emission activity records match your current filter parameters.

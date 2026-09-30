@@ -607,7 +607,7 @@ const ActionPlans = () => {
             <input
               type="text"
               className="form-input"
-              placeholder="🔍 Search plan name..."
+              placeholder="Search plan name..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
             />
@@ -647,7 +647,7 @@ const ActionPlans = () => {
         </div>
       ) : plans.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">📋</div>
+          <div className="empty-state-icon">—</div>
           <h3>No Climate Action Plans Found</h3>
           <p style={{ color: 'var(--text-muted)', marginTop: '0.25rem' }}>
             No climate action plan frameworks match your current search parameters.
@@ -707,7 +707,7 @@ const ActionPlans = () => {
                     </div>
 
                     <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                      🗓️ {new Date(plan.startDate).toLocaleDateString()} → {new Date(plan.targetDate).toLocaleDateString()}
+                      {new Date(plan.startDate).toLocaleDateString()} — {new Date(plan.targetDate).toLocaleDateString()}
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end', marginTop: '0.5rem', flexWrap: 'wrap' }}>
@@ -795,7 +795,7 @@ const ActionPlans = () => {
                                 </p>
 
                                 <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', color: 'var(--text-dim)', flexWrap: 'wrap' }}>
-                                  <span>🏢 Dept: <strong style={{ color: 'var(--text-main)' }}>{act.responsibleDepartment}</strong></span>
+                                  <span>Dept: <strong style={{ color: 'var(--text-main)' }}>{act.responsibleDepartment}</strong></span>
                                   <span>Target: <strong style={{ color: '#f59e0b' }}>{act.expectedCarbonReduction} tCO₂e</strong></span>
                                   <span>Realized: <strong style={{ color: 'var(--primary)' }}>{act.actualCarbonReduction || 0} tCO₂e</strong></span>
                                   <span>Dates: {new Date(act.startDate).toLocaleDateString()} → {new Date(act.targetDate).toLocaleDateString()}</span>

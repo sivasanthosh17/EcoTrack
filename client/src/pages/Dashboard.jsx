@@ -208,7 +208,7 @@ const Dashboard = () => {
         </div>
         <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
           <button className="btn btn-secondary btn-sm" onClick={fetchDashboardStats}>
-            🔄 Refresh Metrics
+            Refresh
           </button>
           <span className="status-pill online">
             <span className="pulse-dot"></span> Live DB Sync
@@ -270,7 +270,7 @@ const Dashboard = () => {
         {/* Chart 1: Emission Trend by Month */}
         <div className="card">
           <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            📈 Emission Trend by Month/Period
+            Emission Trend by Month/Period
           </h3>
           <div style={{ height: '280px', position: 'relative' }}>
             {loading ? (
@@ -284,7 +284,7 @@ const Dashboard = () => {
         {/* Chart 2: Emissions by Source */}
         <div className="card">
           <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            🍕 Emissions Breakdown by Source
+            Emissions Breakdown by Source
           </h3>
           <div style={{ height: '280px', position: 'relative' }}>
             {loading ? (
@@ -298,7 +298,7 @@ const Dashboard = () => {
         {/* Chart 3: Carbon Reduction by Project */}
         <div className="card">
           <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            📊 Carbon Reduction by Project (Target vs Realized)
+            Carbon Reduction by Project (Target vs Realized)
           </h3>
           <div style={{ height: '280px', position: 'relative' }}>
             {loading ? (
@@ -312,7 +312,7 @@ const Dashboard = () => {
         {/* Chart 4: KPI Performance Distribution */}
         <div className="card">
           <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            🎯 Sustainability KPI Performance Status
+            Sustainability KPI Performance Status
           </h3>
           <div style={{ height: '280px', position: 'relative' }}>
             {loading ? (
@@ -327,7 +327,7 @@ const Dashboard = () => {
       {/* Recent System Activity Stream */}
       <div className="card">
         <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-          ⚡ Recent Operational Activity Stream
+          Recent Activity
         </h3>
         {recentActivity.length === 0 ? (
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No recent audit activity logs recorded yet.</p>
