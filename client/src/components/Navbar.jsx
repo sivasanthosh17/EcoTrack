@@ -24,11 +24,6 @@ const Navbar = () => {
           </Link>
           <nav>
             <ul className="nav-links">
-              <li>
-                <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
-                  Home
-                </NavLink>
-              </li>
               <li style={{ display: 'flex', gap: '8px' }}>
                 <NavLink to="/login" className="btn btn-secondary btn-sm">Login</NavLink>
                 <NavLink to="/register" className="btn btn-primary btn-sm">Register</NavLink>
@@ -106,15 +101,6 @@ const Navbar = () => {
             <li>
               <NavLink to="/reports" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
                 Reports
-              </NavLink>
-            </li>
-          </ul>
-
-          <div className="nav-section-title" style={{ marginTop: '16px' }}>Other</div>
-          <ul className="sidebar-links">
-            <li>
-              <NavLink to="/" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
-                Home
               </NavLink>
             </li>
           </ul>
