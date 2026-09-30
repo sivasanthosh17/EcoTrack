@@ -12,40 +12,26 @@ const Navbar = () => {
     navigate('/login');
   };
 
-  const toggleMobileMenu = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const closeMobile = () => setMobileOpen(false);
 
-  const closeMobileMenu = () => {
-    setMobileOpen(false);
-  };
-
+  // Simple top navbar for guests
   if (!user) {
-    // Top Bar Header for Unauthenticated Users (Home, Login, Register)
     return (
       <header className="navbar no-print">
         <div className="navbar-inner">
           <Link to="/" className="brand-logo">
-            🌱 EcoTrack
-            <span className="brand-badge">GHG Portal</span>
+            EcoTrack
           </Link>
           <nav>
             <ul className="nav-links">
               <li>
-                <NavLink 
-                  to="/" 
-                  className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
-                >
+                <NavLink to="/" className={({ isActive }) => isActive ? 'nav-link active' : 'nav-link'}>
                   Home
                 </NavLink>
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <NavLink to="/login" className="btn btn-secondary btn-sm">
-                  Login
-                </NavLink>
-                <NavLink to="/register" className="btn btn-primary btn-sm">
-                  Register
-                </NavLink>
+              <li style={{ display: 'flex', gap: '8px' }}>
+                <NavLink to="/login" className="btn btn-secondary btn-sm">Login</NavLink>
+                <NavLink to="/register" className="btn btn-primary btn-sm">Register</NavLink>
               </li>
             </ul>
           </nav>
@@ -54,33 +40,24 @@ const Navbar = () => {
     );
   }
 
-  // Sidebar Layout for Authenticated Users
+  // Sidebar for logged-in users
   return (
     <>
-      {/* Mobile Top Navigation Header */}
       <header className="mobile-header no-print">
-        <Link to="/dashboard" className="brand-logo">
-          🌱 EcoTrack
-        </Link>
-        <button 
-          className="mobile-toggle-btn"
-          onClick={toggleMobileMenu}
-          aria-label="Toggle navigation menu"
-        >
+        <Link to="/dashboard" className="brand-logo">EcoTrack</Link>
+        <button className="mobile-toggle-btn" onClick={() => setMobileOpen(!mobileOpen)}>
           {mobileOpen ? '✕' : '☰'}
         </button>
       </header>
 
-      {/* Main Sidebar Navigation */}
       <aside className={`sidebar no-print ${mobileOpen ? 'open' : ''}`}>
         <div className="sidebar-header">
-          <Link to="/dashboard" className="brand-logo" onClick={closeMobileMenu}>
-            🌱 EcoTrack
+          <Link to="/dashboard" className="brand-logo" onClick={closeMobile}>
+            EcoTrack
             <span className="brand-badge">v1.0</span>
           </Link>
         </div>
 
-        {/* User Card */}
         <div className="sidebar-user-card">
           <div className="user-avatar">
             {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
@@ -93,119 +70,66 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Navigation Menu */}
         <nav className="sidebar-nav">
-          <div className="nav-section-title">MAIN NAVIGATION</div>
+          <div className="nav-section-title">Menu</div>
           <ul className="sidebar-links">
             <li>
-              <NavLink 
-                to="/dashboard" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">📊</span>
+              <NavLink to="/dashboard" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
                 Dashboard
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/organization" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">🏢</span>
+              <NavLink to="/organization" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
                 Organization
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/emissions" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">💨</span>
-                GHG Emissions
+              <NavLink to="/emissions" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
+                Emissions
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/projects" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">📉</span>
-                Carbon Projects
+              <NavLink to="/projects" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
+                Projects
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/kpis" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">🎯</span>
-                Sustainability KPIs
+              <NavLink to="/kpis" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
+                KPIs
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/action-plans" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">📋</span>
-                Climate Plans
+              <NavLink to="/action-plans" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
+                Action Plans
               </NavLink>
             </li>
             <li>
-              <NavLink 
-                to="/reports" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">📄</span>
+              <NavLink to="/reports" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
                 Reports
               </NavLink>
             </li>
           </ul>
 
-          <div className="nav-section-title" style={{ marginTop: '1.5rem' }}>QUICK ACTIONS</div>
+          <div className="nav-section-title" style={{ marginTop: '16px' }}>Other</div>
           <ul className="sidebar-links">
             <li>
-              <NavLink 
-                to="/" 
-                className={({ isActive }) => isActive ? "sidebar-link active" : "sidebar-link"}
-                onClick={closeMobileMenu}
-              >
-                <span className="nav-icon">🏠</span>
-                Home Page
+              <NavLink to="/" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
+                Home
               </NavLink>
             </li>
           </ul>
         </nav>
 
-        {/* Sidebar Footer Logout */}
         <div className="sidebar-footer">
-          <button 
-            onClick={handleLogout} 
-            className="btn btn-secondary btn-logout"
-            style={{ width: '100%' }}
-          >
-            🚪 Logout
+          <button onClick={handleLogout} className="btn btn-secondary" style={{ width: '100%', fontSize: '0.85rem' }}>
+            Logout
           </button>
         </div>
       </aside>
 
-      {/* Backdrop overlay for mobile */}
-      {mobileOpen && (
-        <div 
-          className="mobile-backdrop no-print"
-          onClick={closeMobileMenu}
-        />
-      )}
+      {mobileOpen && <div className="mobile-backdrop no-print" onClick={closeMobile} />}
     </>
   );
 };
 
 export default Navbar;
-
