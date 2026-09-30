@@ -6,6 +6,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Organization from './pages/Organization';
 import Emissions from './pages/Emissions';
+import Projects from './pages/Projects';
 import PlaceholderPage from './pages/PlaceholderPage';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -39,25 +40,20 @@ function App() {
             } 
           />
           <Route 
+            path="/projects" 
+            element={
+              <ProtectedRoute>
+                <Projects />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
             path="/dashboard" 
             element={
               <ProtectedRoute>
                 <PlaceholderPage 
                   title="Analytics Dashboard" 
                   description="Real-time KPI metrics, Scope breakdowns, and emission trend charts will be available here." 
-                />
-              </ProtectedRoute>
-            } 
-          />
-
-          {/* Role-Protected Route (Organization Admin Only) */}
-          <Route 
-            path="/projects" 
-            element={
-              <ProtectedRoute allowedRoles={['Organization Admin']}>
-                <PlaceholderPage 
-                  title="Carbon Reduction Projects (Admin Only)" 
-                  description="Sustainability initiative cards, progress timelines, and budget management reserved for Organization Admins." 
                 />
               </ProtectedRoute>
             } 
