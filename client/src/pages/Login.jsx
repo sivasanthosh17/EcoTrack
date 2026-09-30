@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
@@ -103,9 +103,6 @@ const Login = () => {
           </div>
         </div>
 
-        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
-          Don't have an account? <Link to="/register" style={{ fontWeight: 600 }}>Register here</Link>
-        </div>
       </div>
     </div>
   );

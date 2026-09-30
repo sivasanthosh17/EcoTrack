@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Organization from './pages/Organization';
 import Emissions from './pages/Emissions';
 import Projects from './pages/Projects';
@@ -26,7 +25,7 @@ function App() {
             {/* Public Routes */}
             <Route path="/" element={<Navigate to={user ? '/dashboard' : '/login'} replace />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/register" element={<Navigate to="/login" replace />} />
 
             {/* Protected Routes (Logged in Users) */}
             <Route 

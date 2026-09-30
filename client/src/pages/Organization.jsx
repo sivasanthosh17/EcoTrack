@@ -41,6 +41,12 @@ const Organization = () => {
     userId: '',
     departmentName: ''
   });
+  const [officerForm, setOfficerForm] = useState({
+    name: '',
+    email: '',
+    password: '',
+    department: ''
+  });
 
   // Loading & Feedback
   const [loading, setLoading] = useState(true);
@@ -211,6 +217,29 @@ const Organization = () => {
       }
     } catch (err) {
       setMessage({ type: 'danger', text: 'Server error while assigning user.' });
+    }
+  };
+
+  const handleCreateOfficer = async (e) => {
+    e.preventDefault();
+    setMessage({ type: '', text: '' });
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/officers`, {
+        method: 'POST',
+        headers: authHeaders,
+        body: JSON.stringify(officerForm)
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessage({ type: 'success', text: 'Department Officer created successfully.' });
+        setOfficerForm({ name: '', email: '', password: '', department: '' });
+        fetchSystemUsers();
+      } else {
+        setMessage({ type: 'danger', text: data.message || 'Failed to create officer.' });
+      }
+    } catch (err) {
+      setMessage({ type: 'danger', text: 'Server error while creating officer.' });
     }
   };
 
@@ -569,7 +598,66 @@ const Organization = () => {
 
       {/* TAB 3: ASSIGN USERS */}
       {activeTab === 'assignment' && isAdmin && (
-        <div className="card" style={{ maxWidth: '600px', margin: '0 auto' }}>
+        <div style={{ display: 'grid', gap: '1.5rem', maxWidth: '760px', margin: '0 auto' }}>
+          <div className="card">
+            <h2 className="card-title">Create Department Officer</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
+              Only Organization Admins can create new officer accounts.
+            </p>
+
+            <form onSubmit={handleCreateOfficer}>
+              <div className="form-group">
+                <label className="form-label">Full Name</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={officerForm.name}
+                  onChange={(e) => setOfficerForm({ ...officerForm, name: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Email Address</label>
+                <input
+                  type="email"
+                  className="form-input"
+                  value={officerForm.email}
+                  onChange={(e) => setOfficerForm({ ...officerForm, email: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Temporary Password</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  minLength="6"
+                  value={officerForm.password}
+                  onChange={(e) => setOfficerForm({ ...officerForm, password: e.target.value })}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Department</label>
+                <select
+                  className="form-input"
+                  value={officerForm.department}
+                  onChange={(e) => setOfficerForm({ ...officerForm, department: e.target.value })}
+                  required
+                >
+                  <option value="">-- Choose Department --</option>
+                  {departments.map((department) => (
+                    <option key={department._id} value={department.name}>{department.name}</option>
+                  ))}
+                </select>
+              </div>
+              <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>
+                Create Officer Account
+              </button>
+            </form>
+          </div>
+
+          <div className="card">
           <h2 className="card-title">Assign Personnel to Department</h2>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
             Select a system user and assign them to an active organizational department
@@ -614,6 +702,7 @@ const Organization = () => {
               Assign Department
             </button>
           </form>
+          </div>
         </div>
       )}
     </div>

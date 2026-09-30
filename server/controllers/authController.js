@@ -78,6 +78,61 @@ export const registerUser = async (req, res) => {
   }
 };
 
+export const createOfficer = async (req, res) => {
+  try {
+    const { name, email, password, department } = req.body;
+
+    if (!name || !email || !password || !department) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please provide name, email, password, and department.'
+      });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Password must be at least 6 characters long.'
+      });
+    }
+
+    const userExists = await User.findOne({ email: email.toLowerCase() });
+    if (userExists) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'An account with this email address already exists.'
+      });
+    }
+
+    const user = await User.create({
+      name,
+      email: email.toLowerCase(),
+      password,
+      role: 'Department Officer',
+      department: department.trim()
+    });
+
+    res.status(201).json({
+      status: 'success',
+      message: 'Department Officer created successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        createdAt: user.createdAt
+      }
+    });
+  } catch (error) {
+    console.error('[Create Officer Error]', error);
+    res.status(500).json({
+      status: 'error',
+      message: error.message || 'Server error while creating officer'
+    });
+  }
+};
+
 /**
  * @desc    Authenticate user & get JWT token
  * @route   POST /api/auth/login
