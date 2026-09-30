@@ -9,7 +9,7 @@ import Emissions from './pages/Emissions';
 import Projects from './pages/Projects';
 import KPIs from './pages/KPIs';
 import ActionPlans from './pages/ActionPlans';
-import PlaceholderPage from './pages/PlaceholderPage';
+import Dashboard from './pages/Dashboard';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 
@@ -69,10 +69,7 @@ function App() {
             path="/dashboard" 
             element={
               <ProtectedRoute>
-                <PlaceholderPage 
-                  title="Analytics Dashboard" 
-                  description="Real-time KPI metrics, Scope breakdowns, and emission trend charts will be available here." 
-                />
+                <Dashboard />
               </ProtectedRoute>
             } 
           />

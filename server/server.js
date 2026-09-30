@@ -11,6 +11,7 @@ import emissionRoutes from './routes/emissionRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import kpiRoutes from './routes/kpiRoutes.js';
 import actionPlanRoutes from './routes/actionPlanRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/api/emissions', checkDbConnection, emissionRoutes);
 app.use('/api/projects', checkDbConnection, projectRoutes);
 app.use('/api/kpis', checkDbConnection, kpiRoutes);
 app.use('/api/action-plans', checkDbConnection, actionPlanRoutes);
+app.use('/api/dashboard', checkDbConnection, dashboardRoutes);
 
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {
