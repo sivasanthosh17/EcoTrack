@@ -6,11 +6,12 @@ import {
   updateEmission,
   deleteEmission
 } from '../controllers/emissionController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, enforceDepartmentScope } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.use(protect);
+router.use(enforceDepartmentScope);
 
 router.get('/factors', getEmissionFactors);
 

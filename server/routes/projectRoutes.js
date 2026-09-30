@@ -7,11 +7,12 @@ import {
   updateProjectProgress,
   deleteProject
 } from '../controllers/projectController.js';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect, enforceDepartmentScope } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.use(protect);
+router.use(enforceDepartmentScope);
 
 router.put('/:id/progress', updateProjectProgress);
 

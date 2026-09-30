@@ -64,3 +64,28 @@ export const authorize = (...roles) => {
     next();
   };
 };
+
+export const enforceDepartmentScope = (req, res, next) => {
+  if (req.user?.role === 'Organization Admin') {
+    return next();
+  }
+
+  const requestedDepartment = req.body?.department || req.query?.department;
+
+  if (requestedDepartment && requestedDepartment !== req.user?.department) {
+    return res.status(403).json({
+      status: 'error',
+      message: 'Access denied. You can only access records for your department.'
+    });
+  }
+
+  if (req.method === 'GET' && req.query) {
+    req.query.department = req.user.department;
+  }
+
+  next();
+};
+
+export const canAccessDepartment = (user, department) => (
+  user?.role === 'Organization Admin' || user?.department === department
+);

@@ -8,11 +8,12 @@ import {
   addKPIMeasurement,
   getKPIMeasurements
 } from '../controllers/kpiController.js';
-import { protect, authorize } from '../middleware/authMiddleware.js';
+import { protect, authorize, enforceDepartmentScope } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.use(protect);
+router.use(enforceDepartmentScope);
 
 router
   .route('/:id/measurements')

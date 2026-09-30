@@ -1,4 +1,5 @@
 import Project from '../models/Project.js';
+import { canAccessDepartment } from '../middleware/authMiddleware.js';
 
 /**
  * @desc    Get all carbon reduction projects with search & filtering
@@ -70,6 +71,10 @@ export const getProjectById = async (req, res) => {
         status: 'error',
         message: 'Project not found'
       });
+    }
+
+    if (!canAccessDepartment(req.user, project.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
     }
 
     res.status(200).json({
@@ -184,6 +189,10 @@ export const updateProject = async (req, res) => {
       });
     }
 
+    if (!canAccessDepartment(req.user, project.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
+    }
+
     if (projectName) project.projectName = projectName.trim();
     if (description) project.description = description.trim();
     if (department) project.department = department.trim();
@@ -245,6 +254,10 @@ export const updateProjectProgress = async (req, res) => {
       });
     }
 
+    if (!canAccessDepartment(req.user, project.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
+    }
+
     if (progressPercentage !== undefined) {
       let prog = Number(progressPercentage);
       if (prog < 0) prog = 0;
@@ -296,6 +309,10 @@ export const deleteProject = async (req, res) => {
         status: 'error',
         message: 'Project not found'
       });
+    }
+
+    if (!canAccessDepartment(req.user, project.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
     }
 
     await project.deleteOne();

@@ -1,5 +1,6 @@
 import ActionPlan from '../models/ActionPlan.js';
 import PlanAction from '../models/PlanAction.js';
+import { canAccessDepartment } from '../middleware/authMiddleware.js';
 
 /**
  * Recalculate Overall Climate Action Plan Progress & Status based on sub-actions
@@ -47,7 +48,9 @@ export const getActionPlans = async (req, res) => {
   try {
     const { status, search } = req.query;
 
-    const query = {};
+    const query = req.user.role === 'Organization Admin'
+      ? {}
+      : { department: req.user.department };
     if (status) query.status = status;
     if (search) {
       query.$or = [
@@ -113,7 +116,10 @@ export const getActionPlans = async (req, res) => {
  */
 export const getActionPlanById = async (req, res) => {
   try {
-    const plan = await ActionPlan.findById(req.params.id).populate('createdBy', 'name email role');
+    const plan = await ActionPlan.findOne({
+      _id: req.params.id,
+      ...(req.user.role === 'Organization Admin' ? {} : { department: req.user.department })
+    }).populate('createdBy', 'name email role');
 
     if (!plan) {
       return res.status(404).json({
@@ -170,6 +176,7 @@ export const createActionPlan = async (req, res) => {
       emissionReductionTarget: target,
       status: status || 'Planned',
       overallProgress: 0,
+      department: req.user.department,
       createdBy: req.user._id
     });
 
@@ -201,7 +208,10 @@ export const updateActionPlan = async (req, res) => {
   try {
     const { planName, description, startDate, targetDate, emissionReductionTarget, status } = req.body;
 
-    const plan = await ActionPlan.findById(req.params.id);
+    const plan = await ActionPlan.findOne({
+      _id: req.params.id,
+      ...(req.user.role === 'Organization Admin' ? {} : { department: req.user.department })
+    });
 
     if (!plan) {
       return res.status(404).json({ status: 'error', message: 'Climate action plan not found' });
@@ -237,7 +247,10 @@ export const updateActionPlan = async (req, res) => {
  */
 export const deleteActionPlan = async (req, res) => {
   try {
-    const plan = await ActionPlan.findById(req.params.id);
+    const plan = await ActionPlan.findOne({
+      _id: req.params.id,
+      ...(req.user.role === 'Organization Admin' ? {} : { department: req.user.department })
+    });
 
     if (!plan) {
       return res.status(404).json({ status: 'error', message: 'Climate action plan not found' });
@@ -264,7 +277,10 @@ export const deleteActionPlan = async (req, res) => {
 export const addAction = async (req, res) => {
   try {
     const planId = req.params.id;
-    const plan = await ActionPlan.findById(planId);
+    const plan = await ActionPlan.findOne({
+      _id: planId,
+      ...(req.user.role === 'Organization Admin' ? {} : { department: req.user.department })
+    });
 
     if (!plan) {
       return res.status(404).json({ status: 'error', message: 'Climate action plan not found' });
@@ -287,6 +303,10 @@ export const addAction = async (req, res) => {
         status: 'error',
         message: 'Please provide action name, description, responsible department, start date, target date, and expected reduction.'
       });
+    }
+
+    if (!canAccessDepartment(req.user, responsibleDepartment.trim())) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
     }
 
     let prog = Number(progressPercentage) || 0;
@@ -340,6 +360,10 @@ export const updateAction = async (req, res) => {
       return res.status(404).json({ status: 'error', message: 'Action item not found' });
     }
 
+    if (!canAccessDepartment(req.user, action.responsibleDepartment)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
+    }
+
     const {
       actionName,
       description,
@@ -373,6 +397,10 @@ export const updateAction = async (req, res) => {
       action.status = status;
     }
 
+    if (responsibleDepartment && !canAccessDepartment(req.user, responsibleDepartment.trim())) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
+    }
+
     const updatedAction = await action.save();
 
     // Recalculate parent plan progress
@@ -402,6 +430,10 @@ export const deleteAction = async (req, res) => {
 
     if (!action) {
       return res.status(404).json({ status: 'error', message: 'Action item not found' });
+    }
+
+    if (!canAccessDepartment(req.user, action.responsibleDepartment)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
     }
 
     const planId = action.plan;

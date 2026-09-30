@@ -1,5 +1,6 @@
 import KPI from '../models/KPI.js';
 import KPIMeasurement from '../models/KPIMeasurement.js';
+import { canAccessDepartment } from '../middleware/authMiddleware.js';
 
 /**
  * Transparent Rule-Based KPI Status Calculation Engine
@@ -128,6 +129,10 @@ export const getKPIById = async (req, res) => {
       });
     }
 
+    if (!canAccessDepartment(req.user, kpi.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
+    }
+
     const history = await KPIMeasurement.find({ kpi: kpi._id })
       .populate('recordedBy', 'name email role')
       .sort({ createdAt: -1 });
@@ -229,6 +234,10 @@ export const updateKPI = async (req, res) => {
         status: 'error',
         message: 'KPI definition not found'
       });
+    }
+
+    if (!canAccessDepartment(req.user, kpi.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
     }
 
     if (kpiName) kpi.kpiName = kpiName.trim();
@@ -368,6 +377,14 @@ export const addKPIMeasurement = async (req, res) => {
  */
 export const getKPIMeasurements = async (req, res) => {
   try {
+    const kpi = await KPI.findById(req.params.id).select('department');
+    if (!kpi) {
+      return res.status(404).json({ status: 'error', message: 'KPI definition not found' });
+    }
+    if (!canAccessDepartment(req.user, kpi.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
+    }
+
     const measurements = await KPIMeasurement.find({ kpi: req.params.id })
       .populate('recordedBy', 'name email role')
       .sort({ createdAt: -1 });

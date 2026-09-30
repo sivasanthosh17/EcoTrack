@@ -8,7 +8,7 @@ import generateToken from '../utils/generateToken.js';
  */
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, role, department } = req.body;
+    const { name, email, password, department } = req.body;
 
     // Basic Validation
     if (!name || !email || !password) {
@@ -34,9 +34,8 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    // Ensure role is valid if specified
-    const validRoles = ['Organization Admin', 'Department Officer'];
-    const assignedRole = validRoles.includes(role) ? role : 'Department Officer';
+    // Public registration can never grant organization-wide privileges.
+    const assignedRole = 'Department Officer';
 
     // Create user in database
     const user = await User.create({

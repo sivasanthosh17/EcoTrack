@@ -36,6 +36,11 @@ const actionPlanSchema = new mongoose.Schema(
       max: 100,
       default: 0
     },
+    department: {
+      type: String,
+      trim: true,
+      default: null
+    },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',

@@ -1,4 +1,5 @@
 import Emission from '../models/Emission.js';
+import { canAccessDepartment } from '../middleware/authMiddleware.js';
 
 // Standardized GHG Emission Factors (in metric tons CO2e per activity unit)
 export const DEFAULT_EMISSION_FACTORS = {
@@ -179,6 +180,10 @@ export const updateEmission = async (req, res) => {
       });
     }
 
+    if (!canAccessDepartment(req.user, emission.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
+    }
+
     if (department) emission.department = department.trim();
     if (emissionSource) emission.emissionSource = emissionSource;
     if (scope) emission.scope = scope;
@@ -225,6 +230,10 @@ export const deleteEmission = async (req, res) => {
         status: 'error',
         message: 'Emission record not found'
       });
+    }
+
+    if (!canAccessDepartment(req.user, emission.department)) {
+      return res.status(403).json({ status: 'error', message: 'Access denied for this department.' });
     }
 
     await emission.deleteOne();

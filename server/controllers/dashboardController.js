@@ -12,8 +12,13 @@ import PlanAction from '../models/PlanAction.js';
  */
 export const getDashboardStats = async (req, res) => {
   try {
+    const departmentFilter = req.user.role === 'Organization Admin'
+      ? {}
+      : { department: req.user.department };
+
     // 1. Total CO2e Emissions Aggregation
     const emissionTotalAgg = await Emission.aggregate([
+      { $match: departmentFilter },
       { $group: { _id: null, totalCO2e: { $sum: '$calculatedCO2e' }, count: { $sum: 1 } } }
     ]);
     const totalCO2e = emissionTotalAgg[0] ? Number(emissionTotalAgg[0].totalCO2e.toFixed(2)) : 0;
@@ -21,6 +26,7 @@ export const getDashboardStats = async (req, res) => {
 
     // 2. Emissions Breakdown by Source
     const sourceBreakdown = await Emission.aggregate([
+      { $match: departmentFilter },
       { $group: { _id: '$emissionSource', totalCO2e: { $sum: '$calculatedCO2e' }, count: { $sum: 1 } } },
       { $sort: { totalCO2e: -1 } }
     ]);
@@ -32,6 +38,7 @@ export const getDashboardStats = async (req, res) => {
 
     // 3. Monthly Emission Trend
     const monthlyTrendAgg = await Emission.aggregate([
+      { $match: departmentFilter },
       { $group: { _id: '$reportingPeriod', totalCO2e: { $sum: '$calculatedCO2e' } } },
       { $sort: { _id: 1 } }
     ]);
@@ -42,8 +49,10 @@ export const getDashboardStats = async (req, res) => {
     };
 
     // 4. Carbon Reduction Projects Aggregation
-    const projects = await Project.find().sort({ createdAt: -1 });
-    const planActions = await PlanAction.find();
+    const projects = await Project.find(departmentFilter).sort({ createdAt: -1 });
+    const planActions = await PlanAction.find(req.user.role === 'Organization Admin'
+      ? {}
+      : { responsibleDepartment: req.user.department });
 
     const activeProjectsCount = projects.filter(p => p.status === 'In Progress' || p.status === 'Planned').length;
     const projectActualReductionSum = projects.reduce((acc, p) => acc + (p.actualCarbonReduction || 0), 0);
@@ -57,7 +66,7 @@ export const getDashboardStats = async (req, res) => {
     };
 
     // 5. KPI Performance Aggregation
-    const kpis = await KPI.find();
+    const kpis = await KPI.find(departmentFilter);
     const kpiStatusCounts = {
       Achieved: 0,
       'On Track': 0,
@@ -86,22 +95,29 @@ export const getDashboardStats = async (req, res) => {
     };
 
     // 6. Climate Action Plan Progress Aggregation
-    const actionPlans = await ActionPlan.find();
+    const actionPlans = await ActionPlan.find(req.user.role === 'Organization Admin'
+      ? {}
+      : { department: req.user.department });
     const climateActionPlanProgress = actionPlans.length > 0
       ? Math.round(actionPlans.reduce((acc, p) => acc + (p.overallProgress || 0), 0) / actionPlans.length)
       : 0;
 
     // 7. Recent System Activity Stream
-    const recentEmissions = await Emission.find()
+    const recentEmissions = await Emission.find(departmentFilter)
       .populate('recordedBy', 'name email')
       .sort({ createdAt: -1 })
       .limit(4);
 
     const recentMeasurements = await KPIMeasurement.find()
+      .populate('kpi', 'kpiName unit department')
       .populate('kpi', 'kpiName unit')
       .populate('recordedBy', 'name email')
       .sort({ createdAt: -1 })
       .limit(4);
+
+    const visibleMeasurements = req.user.role === 'Organization Admin'
+      ? recentMeasurements
+      : recentMeasurements.filter(measurement => measurement.kpi?.department === req.user.department);
 
     const recentActivity = [
       ...recentEmissions.map(e => ({
@@ -112,7 +128,7 @@ export const getDashboardStats = async (req, res) => {
         timestamp: e.createdAt,
         user: e.recordedBy?.name || 'Officer'
       })),
-      ...recentMeasurements.map(m => ({
+      ...visibleMeasurements.map(m => ({
         id: `kpi-${m._id}`,
         type: 'KPI Measurement',
         title: m.kpi?.kpiName || 'KPI Measurement',
