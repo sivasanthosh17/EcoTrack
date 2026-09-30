@@ -7,6 +7,7 @@ import Register from './pages/Register';
 import Organization from './pages/Organization';
 import Emissions from './pages/Emissions';
 import Projects from './pages/Projects';
+import KPIs from './pages/KPIs';
 import PlaceholderPage from './pages/PlaceholderPage';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -44,6 +45,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Projects />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/kpis" 
+            element={
+              <ProtectedRoute>
+                <KPIs />
               </ProtectedRoute>
             } 
           />

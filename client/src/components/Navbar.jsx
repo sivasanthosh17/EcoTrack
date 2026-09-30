@@ -41,14 +41,6 @@ const Navbar = () => {
                 </li>
                 <li>
                   <NavLink 
-                    to="/dashboard" 
-                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
-                  >
-                    Dashboard
-                  </NavLink>
-                </li>
-                <li>
-                  <NavLink 
                     to="/emissions" 
                     className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
                   >
@@ -61,6 +53,22 @@ const Navbar = () => {
                     className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
                   >
                     Projects
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/kpis" 
+                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                  >
+                    KPIs
+                  </NavLink>
+                </li>
+                <li>
+                  <NavLink 
+                    to="/dashboard" 
+                    className={({ isActive }) => isActive ? "nav-link active" : "nav-link"}
+                  >
+                    Dashboard
                   </NavLink>
                 </li>
               </>
