@@ -274,7 +274,7 @@ const Organization = () => {
             <h2 className="card-title">Entity Details</h2>
             {isAdmin && !editingOrg && (
               <button className="btn btn-secondary btn-sm" onClick={() => setEditingOrg(true)}>
-                ✏️ Edit Details
+                Edit Details
               </button>
             )}
           </div>

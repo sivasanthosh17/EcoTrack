@@ -375,7 +375,7 @@ const ActionPlans = () => {
             <h2 className="card-title">
               {isEditingPlan ? 'Edit Climate Action Plan' : 'Create New Climate Action Plan'}
             </h2>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowPlanModal(false)}>✕ Close</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowPlanModal(false)}>Close</button>
           </div>
 
           <form onSubmit={handlePlanSubmit}>
@@ -471,7 +471,7 @@ const ActionPlans = () => {
             <h2 className="card-title">
               {isEditingAction ? 'Edit Sub-Action Item' : `Add Sub-Action to '${selectedPlanForAction.planName}'`}
             </h2>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowActionModal(false)}>✕ Close</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowActionModal(false)}>Close</button>
           </div>
 
           <form onSubmit={handleActionSubmit}>
@@ -734,7 +734,7 @@ const ActionPlans = () => {
                         className="btn btn-secondary btn-sm"
                         onClick={() => setExpandedPlanId(isExpanded ? null : plan._id)}
                       >
-                        {isExpanded ? '▲ Hide Actions' : `▼ View Actions (${plan.actionsCount || 0})`}
+                        {isExpanded ? 'Hide Actions' : `View Actions (${plan.actionsCount || 0})`}
                       </button>
                     </div>
                   </div>
@@ -798,7 +798,7 @@ const ActionPlans = () => {
                                   <span>Dept: <strong style={{ color: 'var(--text-main)' }}>{act.responsibleDepartment}</strong></span>
                                   <span>Target: <strong style={{ color: '#f59e0b' }}>{act.expectedCarbonReduction} tCO₂e</strong></span>
                                   <span>Realized: <strong style={{ color: 'var(--primary)' }}>{act.actualCarbonReduction || 0} tCO₂e</strong></span>
-                                  <span>Dates: {new Date(act.startDate).toLocaleDateString()} → {new Date(act.targetDate).toLocaleDateString()}</span>
+                                  <span>Dates: {new Date(act.startDate).toLocaleDateString()} to {new Date(act.targetDate).toLocaleDateString()}</span>
                                 </div>
                               </div>
 

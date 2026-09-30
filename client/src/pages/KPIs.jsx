@@ -364,7 +364,7 @@ const KPIs = () => {
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid var(--primary)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 className="card-title">Record Period Measurement for {selectedKPI.kpiName}</h3>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowMeasureModal(false)}>✕ Close</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowMeasureModal(false)}>Close</button>
           </div>
 
           <form onSubmit={handleMeasureSubmit}>
@@ -447,7 +447,7 @@ const KPIs = () => {
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid var(--accent)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 className="card-title">Measurement History for {selectedKPI.kpiName}</h3>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowHistoryModal(false)}>✕ Close</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowHistoryModal(false)}>Close</button>
           </div>
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
@@ -501,7 +501,7 @@ const KPIs = () => {
             <h2 className="card-title">
               {isEditing ? 'Edit Sustainability KPI Definition' : 'Define New Sustainability KPI'}
             </h2>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowKPIModal(false)}>✕ Close</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowKPIModal(false)}>Close</button>
           </div>
 
           <form onSubmit={handleKPISubmit}>

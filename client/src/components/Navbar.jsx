@@ -41,7 +41,7 @@ const Navbar = () => {
       <header className="mobile-header no-print">
         <Link to="/dashboard" className="brand-logo">EcoTrack</Link>
         <button className="mobile-toggle-btn" onClick={() => setMobileOpen(!mobileOpen)}>
-          {mobileOpen ? '✕' : '☰'}
+          {mobileOpen ? '\u00D7' : '\u2261'}
         </button>
       </header>
 

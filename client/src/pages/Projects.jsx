@@ -300,7 +300,7 @@ const Projects = () => {
         <div className="card" style={{ marginBottom: '1.5rem', borderLeft: '4px solid var(--accent)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
             <h3 className="card-title">Update Project Progress</h3>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowProgressModal(false)}>✕ Close</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowProgressModal(false)}>Close</button>
           </div>
 
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
@@ -368,7 +368,7 @@ const Projects = () => {
             <h2 className="card-title">
               {isEditing ? 'Edit Project Specifications' : 'Create Carbon Reduction Project'}
             </h2>
-            <button className="btn btn-secondary btn-sm" onClick={() => setShowModal(false)}>✕ Close</button>
+            <button className="btn btn-secondary btn-sm" onClick={() => setShowModal(false)}>Close</button>
           </div>
 
           <form onSubmit={handleSubmit}>

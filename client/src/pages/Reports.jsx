@@ -418,7 +418,7 @@ const Reports = () => {
                     <td style={{ padding: '0.6rem 0.75rem', fontWeight: 600, color: '#0f172a' }}>{plan.planName}</td>
                     <td style={{ padding: '0.6rem 0.75rem', color: '#d97706', fontWeight: 600 }}>{plan.emissionReductionTarget} tCO₂e</td>
                     <td style={{ padding: '0.6rem 0.75rem', color: '#475569' }}>
-                      {new Date(plan.startDate).toLocaleDateString()} → {new Date(plan.targetDate).toLocaleDateString()}
+                      {new Date(plan.startDate).toLocaleDateString()} to {new Date(plan.targetDate).toLocaleDateString()}
                     </td>
                     <td style={{ padding: '0.6rem 0.75rem', color: '#334155' }}>{plan.actionsCount || 0} Items</td>
                     <td style={{ padding: '0.6rem 0.75rem', fontWeight: 600, color: '#334155' }}>{plan.status}</td>

@@ -305,7 +305,7 @@ const Emissions = () => {
                 resetForm();
               }}
             >
-              ✕ Close
+              Close
             </button>
           </div>
 
