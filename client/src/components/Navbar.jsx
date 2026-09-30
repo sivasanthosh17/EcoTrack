@@ -26,7 +26,6 @@ const Navbar = () => {
             <ul className="nav-links">
               <li style={{ display: 'flex', gap: '8px' }}>
                 <NavLink to="/login" className="btn btn-secondary btn-sm">Login</NavLink>
-                <NavLink to="/register" className="btn btn-primary btn-sm">Register</NavLink>
               </li>
             </ul>
           </nav>
