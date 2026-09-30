@@ -15,6 +15,14 @@ import {
 } from 'chart.js';
 import { Line, Doughnut, Bar } from 'react-chartjs-2';
 
+const ChartEmptyState = ({ title, description }) => (
+  <div className="dashboard-chart-empty">
+    <div className="dashboard-chart-empty-mark">--</div>
+    <strong>{title}</strong>
+    <span>{description}</span>
+  </div>
+);
+
 // Register ChartJS modules
 ChartJS.register(
   CategoryScale,
@@ -53,6 +61,8 @@ const Dashboard = () => {
   });
 
   const [recentActivity, setRecentActivity] = useState([]);
+  const [organizationName, setOrganizationName] = useState('Organization');
+  const [periodFilter, setPeriodFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -63,20 +73,25 @@ const Dashboard = () => {
 
   useEffect(() => {
     fetchDashboardStats();
-  }, []);
+  }, [periodFilter]);
 
   const fetchDashboardStats = async () => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch(`${API_BASE_URL}/dashboard/stats`, {
-        headers: authHeaders
-      });
+      const [res, organizationRes] = await Promise.all([
+        fetch(`${API_BASE_URL}/dashboard/stats?period=${periodFilter}`, { headers: authHeaders }),
+        fetch(`${API_BASE_URL}/organization`, { headers: authHeaders })
+      ]);
       const data = await res.json();
+      const organizationData = await organizationRes.json();
       if (res.ok) {
         setMetrics(data.metrics || {});
         setCharts(data.charts || {});
         setRecentActivity(data.recentActivity || []);
+        if (organizationData.organization?.name) {
+          setOrganizationName(organizationData.organization.name);
+        }
       } else {
         setError(data.message || 'Failed to load dashboard metrics.');
       }
@@ -86,6 +101,21 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  const hasEmissionData = metrics.totalEmissionLogsCount > 0;
+  const hasProjectData = metrics.totalProjectsCount > 0;
+  const hasKPIData = metrics.totalKPIsCount > 0;
+  const hasActionPlanData = metrics.totalActionPlansCount > 0;
+  const hasAnyData = hasEmissionData || hasProjectData || hasKPIData || hasActionPlanData;
+  const periodLabels = {
+    all: 'All available periods',
+    month: 'Current month',
+    quarter: 'Current quarter',
+    year: 'Current year'
+  };
+  const reductionRate = metrics.totalCO2e > 0
+    ? Math.round((metrics.totalCarbonReduction / metrics.totalCO2e) * 100)
+    : 0;
 
   // Chart 1 Options & Config: Emission Trend (Line Chart)
   const lineChartData = {
@@ -199,14 +229,26 @@ const Dashboard = () => {
   return (
     <div>
       {/* Title & Live Status Banner */}
-      <div style={{ marginBottom: '1.75rem', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem' }}>
+      <div className="dashboard-header">
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.35rem' }}>Executive Sustainability Dashboard</h1>
-          <p style={{ color: 'var(--text-muted)' }}>
-            Real-time analytics and consolidated environmental performance indicators derived from MongoDB APIs
-          </p>
+          <div className="dashboard-eyebrow">{organizationName}</div>
+          <h1>Executive Sustainability Dashboard</h1>
+          <p>Environmental performance at a glance, scoped to your current access.</p>
+          <div className="dashboard-context-row">
+            <span>Reporting: <strong>{periodLabels[periodFilter]}</strong></span>
+            <span>Scope: <strong>{user?.role === 'Organization Admin' ? 'Entire organization' : user?.department}</strong></span>
+          </div>
         </div>
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+        <div className="dashboard-actions">
+          <label className="dashboard-period-control">
+            <span>Period</span>
+            <select value={periodFilter} onChange={(event) => setPeriodFilter(event.target.value)}>
+              <option value="all">All periods</option>
+              <option value="month">This month</option>
+              <option value="quarter">This quarter</option>
+              <option value="year">This year</option>
+            </select>
+          </label>
           <button className="btn btn-secondary btn-sm" onClick={fetchDashboardStats}>
             Refresh
           </button>
@@ -222,59 +264,69 @@ const Dashboard = () => {
         </div>
       )}
 
+      {!loading && !hasAnyData && (
+        <div className="dashboard-empty-state">
+          <div className="dashboard-empty-mark">+</div>
+          <div>
+            <h2>No sustainability data for this view</h2>
+            <p>Start by recording an emission, creating a project, or defining a KPI. Your dashboard will update here.</p>
+          </div>
+        </div>
+      )}
+
       {/* 5 Real-Time Summary Metric Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '1.25rem', marginBottom: '1.75rem' }}>
-        <div className="card">
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>TOTAL CO₂e EMISSIONS</span>
-          <h2 style={{ fontSize: '1.8rem', color: 'var(--primary)', marginTop: '0.2rem' }}>
+      <div className="dashboard-metric-grid">
+        <div className="card dashboard-metric-card dashboard-metric-primary">
+          <div className="metric-card-top"><span className="metric-mark metric-mark-green">CO₂</span><span className="metric-kicker">EMISSIONS</span></div>
+          <h2>
             {loading ? '...' : metrics.totalCO2e?.toLocaleString()} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>tCO₂e</span>
           </h2>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{metrics.totalEmissionLogsCount || 0} Logged Entries</span>
+          <span className="metric-detail">{metrics.totalEmissionLogsCount || 0} logged entries</span>
         </div>
 
-        <div className="card">
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>TOTAL CARBON REDUCTION</span>
-          <h2 style={{ fontSize: '1.8rem', color: 'var(--accent)', marginTop: '0.2rem' }}>
+        <div className="card dashboard-metric-card">
+          <div className="metric-card-top"><span className="metric-mark metric-mark-blue">↓</span><span className="metric-kicker">REDUCTION</span></div>
+          <h2>
             {loading ? '...' : metrics.totalCarbonReduction?.toLocaleString()} <span style={{ fontSize: '0.9rem', color: 'var(--text-muted)' }}>tCO₂e</span>
           </h2>
-          <span style={{ fontSize: '0.8rem', color: 'var(--accent)' }}>Realized Savings</span>
+          <span className="metric-detail metric-detail-accent">{reductionRate}% of recorded emissions</span>
         </div>
 
-        <div className="card">
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>ACTIVE REDUCTION PROJECTS</span>
-          <h2 style={{ fontSize: '1.8rem', color: '#f59e0b', marginTop: '0.2rem' }}>
+        <div className="card dashboard-metric-card">
+          <div className="metric-card-top"><span className="metric-mark metric-mark-orange">P</span><span className="metric-kicker">PROJECTS</span></div>
+          <h2>
             {loading ? '...' : metrics.activeProjectsCount}
           </h2>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>out of {metrics.totalProjectsCount || 0} Total Projects</span>
+          <span className="metric-detail">{metrics.totalProjectsCount || 0} total projects</span>
         </div>
 
-        <div className="card">
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>KPI ACHIEVEMENT RATE</span>
-          <h2 style={{ fontSize: '1.8rem', color: '#38bdf8', marginTop: '0.2rem' }}>
+        <div className="card dashboard-metric-card">
+          <div className="metric-card-top"><span className="metric-mark metric-mark-cyan">K</span><span className="metric-kicker">KPI HEALTH</span></div>
+          <h2>
             {loading ? '...' : metrics.kpiAchievementPercentage}%
           </h2>
-          <span style={{ fontSize: '0.8rem', color: '#38bdf8' }}>Achieved / On Track KPIs</span>
+          <span className="metric-detail">{metrics.totalKPIsCount || 0} tracked KPIs</span>
         </div>
 
-        <div className="card">
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>ACTION PLAN PROGRESS</span>
-          <h2 style={{ fontSize: '1.8rem', color: '#a855f7', marginTop: '0.2rem' }}>
+        <div className="card dashboard-metric-card">
+          <div className="metric-card-top"><span className="metric-mark metric-mark-purple">A</span><span className="metric-kicker">ACTION PLANS</span></div>
+          <h2>
             {loading ? '...' : metrics.climateActionPlanProgress}%
           </h2>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Overall Framework Rate</span>
+          <span className="metric-detail">{metrics.totalActionPlansCount || 0} active plans</span>
         </div>
       </div>
 
       {/* 4 Visual Charts Grid */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))', gap: '1.5rem', marginBottom: '1.75rem' }}>
+      <div className="dashboard-chart-grid">
         {/* Chart 1: Emission Trend by Month */}
-        <div className="card">
-          <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            Emission Trend by Month/Period
-          </h3>
-          <div style={{ height: '280px', position: 'relative' }}>
+        <div className="card dashboard-chart-card">
+          <div className="dashboard-chart-heading"><div><span className="chart-kicker">EMISSIONS</span><h3>Emission trend</h3></div><span className="chart-period">{periodLabels[periodFilter]}</span></div>
+          <div className="dashboard-chart-frame">
             {loading ? (
-              <p style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '5rem' }}>Loading chart data...</p>
+              <ChartEmptyState title="Loading data" description="Fetching the selected reporting period." />
+            ) : !hasEmissionData ? (
+              <ChartEmptyState title="No emission records" description="Add records in Emissions to see a trend." />
             ) : (
               <Line data={lineChartData} options={lineChartOptions} />
             )}
@@ -282,13 +334,13 @@ const Dashboard = () => {
         </div>
 
         {/* Chart 2: Emissions by Source */}
-        <div className="card">
-          <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            Emissions Breakdown by Source
-          </h3>
-          <div style={{ height: '280px', position: 'relative' }}>
+        <div className="card dashboard-chart-card">
+          <div className="dashboard-chart-heading"><div><span className="chart-kicker">SOURCES</span><h3>Emissions by source</h3></div><span className="chart-period">{periodLabels[periodFilter]}</span></div>
+          <div className="dashboard-chart-frame">
             {loading ? (
-              <p style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '5rem' }}>Loading chart data...</p>
+              <ChartEmptyState title="Loading data" description="Fetching the selected reporting period." />
+            ) : !hasEmissionData ? (
+              <ChartEmptyState title="No source data" description="Source totals appear after emissions are recorded." />
             ) : (
               <Doughnut data={doughnutChartData} options={doughnutChartOptions} />
             )}
@@ -296,13 +348,13 @@ const Dashboard = () => {
         </div>
 
         {/* Chart 3: Carbon Reduction by Project */}
-        <div className="card">
-          <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            Carbon Reduction by Project (Target vs Realized)
-          </h3>
-          <div style={{ height: '280px', position: 'relative' }}>
+        <div className="card dashboard-chart-card">
+          <div className="dashboard-chart-heading"><div><span className="chart-kicker">PROJECT DELIVERY</span><h3>Target vs realized reduction</h3></div></div>
+          <div className="dashboard-chart-frame">
             {loading ? (
-              <p style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '5rem' }}>Loading chart data...</p>
+              <ChartEmptyState title="Loading data" description="Fetching project performance." />
+            ) : !hasProjectData ? (
+              <ChartEmptyState title="No projects yet" description="Create a reduction project to compare delivery." />
             ) : (
               <Bar data={projectBarData} options={projectBarOptions} />
             )}
@@ -310,13 +362,13 @@ const Dashboard = () => {
         </div>
 
         {/* Chart 4: KPI Performance Distribution */}
-        <div className="card">
-          <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-            Sustainability KPI Performance Status
-          </h3>
-          <div style={{ height: '280px', position: 'relative' }}>
+        <div className="card dashboard-chart-card">
+          <div className="dashboard-chart-heading"><div><span className="chart-kicker">PERFORMANCE</span><h3>KPI health distribution</h3></div></div>
+          <div className="dashboard-chart-frame">
             {loading ? (
-              <p style={{ color: 'var(--text-muted)', textAlign: 'center', paddingTop: '5rem' }}>Loading chart data...</p>
+              <ChartEmptyState title="Loading data" description="Fetching KPI performance." />
+            ) : !hasKPIData ? (
+              <ChartEmptyState title="No KPIs defined" description="Define a KPI to start tracking performance." />
             ) : (
               <Bar data={kpiBarData} options={kpiBarOptions} />
             )}
@@ -326,11 +378,9 @@ const Dashboard = () => {
 
       {/* Recent System Activity Stream */}
       <div className="card">
-        <h3 className="card-title" style={{ fontSize: '1.1rem', marginBottom: '1rem' }}>
-          Recent Activity
-        </h3>
+        <div className="dashboard-activity-heading"><div><span className="chart-kicker">AUDIT TRAIL</span><h3>Recent activity</h3></div><span className="chart-period">{periodLabels[periodFilter]}</span></div>
         {recentActivity.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>No recent audit activity logs recorded yet.</p>
+          <div className="dashboard-activity-empty">No activity recorded for this reporting period.</div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {recentActivity.map((act) => (
