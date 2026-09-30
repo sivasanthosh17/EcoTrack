@@ -8,6 +8,7 @@ import Organization from './pages/Organization';
 import Emissions from './pages/Emissions';
 import Projects from './pages/Projects';
 import KPIs from './pages/KPIs';
+import ActionPlans from './pages/ActionPlans';
 import PlaceholderPage from './pages/PlaceholderPage';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -53,6 +54,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <KPIs />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/action-plans" 
+            element={
+              <ProtectedRoute>
+                <ActionPlans />
               </ProtectedRoute>
             } 
           />

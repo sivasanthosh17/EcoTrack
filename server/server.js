@@ -10,6 +10,7 @@ import departmentRoutes from './routes/departmentRoutes.js';
 import emissionRoutes from './routes/emissionRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import kpiRoutes from './routes/kpiRoutes.js';
+import actionPlanRoutes from './routes/actionPlanRoutes.js';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -31,6 +32,7 @@ app.use('/api/departments', checkDbConnection, departmentRoutes);
 app.use('/api/emissions', checkDbConnection, emissionRoutes);
 app.use('/api/projects', checkDbConnection, projectRoutes);
 app.use('/api/kpis', checkDbConnection, kpiRoutes);
+app.use('/api/action-plans', checkDbConnection, actionPlanRoutes);
 
 // Health Check Endpoint
 app.get('/api/health', (req, res) => {
