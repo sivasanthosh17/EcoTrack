@@ -9,7 +9,7 @@ import jwt from 'jsonwebtoken';
 const generateToken = (id, role) => {
   return jwt.sign(
     { id, role },
-    process.env.JWT_SECRET || 'ecotrack_super_secret_jwt_key_2026',
+    process.env.JWT_SECRET,
     { expiresIn: '30d' }
   );
 };
