@@ -31,6 +31,14 @@ export const protect = async (req, res, next) => {
         });
       }
 
+      // Ends existing sessions as soon as an admin deactivates the account
+      if (req.user.isActive === false) {
+        return res.status(401).json({
+          status: 'error',
+          message: 'This account has been deactivated. Please contact your administrator.'
+        });
+      }
+
       next();
     } catch (error) {
       console.error('[Auth Middleware Error]', error.message);

@@ -155,6 +155,13 @@ export const loginUser = async (req, res) => {
 
     // Verify user and password match
     if (user && (await user.matchPassword(password))) {
+      if (user.isActive === false) {
+        return res.status(403).json({
+          status: 'error',
+          message: 'This account has been deactivated. Please contact your administrator.'
+        });
+      }
+
       const token = generateToken(user._id, user.role);
 
       res.status(200).json({
@@ -201,6 +208,62 @@ export const getMe = async (req, res) => {
     res.status(500).json({
       status: 'error',
       message: 'Failed to fetch user profile'
+    });
+  }
+};
+
+/**
+ * @desc    Change the logged in user's password
+ * @route   PUT /api/auth/change-password
+ * @access  Private
+ */
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please provide your current password and a new password'
+      });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'New password must be at least 8 characters long'
+      });
+    }
+
+    if (newPassword === currentPassword) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'New password must be different from the current password'
+      });
+    }
+
+    const user = await User.findById(req.user._id);
+
+    // 400 rather than 401: the session is valid, only the entered password is wrong
+    if (!(await user.matchPassword(currentPassword))) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Current password is incorrect'
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password changed successfully'
+    });
+  } catch (error) {
+    console.error('[Change Password Error]', error);
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to change password'
     });
   }
 };

@@ -9,6 +9,7 @@ import KPIs from './pages/KPIs';
 import ActionPlans from './pages/ActionPlans';
 import Reports from './pages/Reports';
 import Dashboard from './pages/Dashboard';
+import ChangePassword from './pages/ChangePassword';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
@@ -83,6 +84,15 @@ function App() {
                   <Dashboard />
                 </ProtectedRoute>
               } 
+            />
+
+            <Route
+              path="/change-password"
+              element={
+                <ProtectedRoute>
+                  <ChangePassword />
+                </ProtectedRoute>
+              }
             />
 
             {/* 404 Route */}

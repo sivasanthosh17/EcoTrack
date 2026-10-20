@@ -8,7 +8,7 @@ const Login = () => {
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  const { login } = useAuth();
+  const { login, authNotice } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,9 +40,13 @@ const Login = () => {
         <h1 className="auth-title">Sign In to EcoTrack</h1>
         <p className="auth-subtitle">Access your greenhouse gas accounting dashboard</p>
 
-        {error && (
+        {error ? (
           <div className="alert alert-danger" style={{ marginBottom: '1.25rem' }}>
             {error}
+          </div>
+        ) : authNotice && (
+          <div className="alert alert-warning" style={{ marginBottom: '1.25rem' }}>
+            {authNotice}
           </div>
         )}
 

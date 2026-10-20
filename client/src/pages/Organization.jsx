@@ -244,6 +244,32 @@ const Organization = () => {
     }
   };
 
+  const handleToggleUserStatus = async (u) => {
+    const activate = u.isActive === false;
+    if (!activate && !window.confirm(`Deactivate ${u.name}? They will be logged out and unable to sign in until reactivated. Their records are kept.`)) return;
+    setMessage({ type: '', text: '' });
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/departments/users/${u._id}/status`, {
+        method: 'PUT',
+        headers: authHeaders,
+        body: JSON.stringify({ isActive: activate })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setMessage({ type: 'success', text: data.message });
+        fetchSystemUsers();
+        fetchDepartments();
+      } else {
+        setMessage({ type: 'danger', text: data.message || 'Failed to update account status.' });
+      }
+    } catch (err) {
+      console.error('Failed to update account status', err);
+      setMessage({ type: 'danger', text: 'Server error while updating account status.' });
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const resetDeptForm = () => {
     setDeptForm({ id: null, name: '', code: '', description: '', headOfDepartment: '', location: '' });
     setIsEditingDept(false);
@@ -703,6 +729,59 @@ const Organization = () => {
               Assign Department
             </button>
           </form>
+          </div>
+
+          <div className="card">
+            <h2 className="card-title">User Accounts</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1rem' }}>
+              Deactivate accounts for people who have left. Their records stay in the system and the account can be reactivated later.
+            </p>
+            <div style={{ overflowX: 'auto' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <thead>
+                  <tr style={{ textAlign: 'left', color: 'var(--text-muted)', borderBottom: '1px solid var(--border)' }}>
+                    <th style={{ padding: '0.5rem' }}>Name</th>
+                    <th style={{ padding: '0.5rem' }}>Role</th>
+                    <th style={{ padding: '0.5rem' }}>Department</th>
+                    <th style={{ padding: '0.5rem' }}>Status</th>
+                    <th style={{ padding: '0.5rem' }} />
+                  </tr>
+                </thead>
+                <tbody>
+                  {systemUsers.map((u) => {
+                    const active = u.isActive !== false;
+                    const isSelf = u._id === user?._id;
+                    return (
+                      <tr key={u._id} style={{ borderBottom: '1px solid var(--border)' }}>
+                        <td style={{ padding: '0.5rem' }}>
+                          <div style={{ fontWeight: 600 }}>{u.name}</div>
+                          <div style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>{u.email}</div>
+                        </td>
+                        <td style={{ padding: '0.5rem' }}>{u.role}</td>
+                        <td style={{ padding: '0.5rem' }}>{u.department || '—'}</td>
+                        <td style={{ padding: '0.5rem' }}>
+                          <span className={`status-pill ${active ? 'online' : 'offline'}`}>{active ? 'Active' : 'Deactivated'}</span>
+                        </td>
+                        <td style={{ padding: '0.5rem', textAlign: 'right' }}>
+                          {isSelf ? (
+                            <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem' }}>You</span>
+                          ) : (
+                            <button
+                              type="button"
+                              className="btn btn-secondary btn-sm"
+                              style={active ? { color: 'var(--danger)' } : undefined}
+                              onClick={() => handleToggleUserStatus(u)}
+                            >
+                              {active ? 'Deactivate' : 'Reactivate'}
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       )}

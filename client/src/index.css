@@ -269,6 +269,7 @@ a:hover { text-decoration: underline; }
 .alert { padding: 10px 14px; border-radius: 6px; font-size: 0.88rem; margin-bottom: 16px; }
 .alert-danger { background: var(--red-light); border: 1px solid #fecaca; color: var(--red); }
 .alert-success { background: var(--green-light); border: 1px solid #bbf7d0; color: var(--green); }
+.alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
 
 /* ---- Empty state ---- */
 .empty-state {

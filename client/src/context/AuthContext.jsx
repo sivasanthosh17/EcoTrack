@@ -6,8 +6,39 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Explains on the login page why the user was signed out
+  const [authNotice, setAuthNotice] = useState('');
 
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+  // Any 401 from the API means the session is no longer valid (expired token or
+  // deactivated account): sign out so ProtectedRoute sends the user to /login
+  useEffect(() => {
+    const originalFetch = window.fetch;
+
+    window.fetch = async (...args) => {
+      const response = await originalFetch(...args);
+      const url = typeof args[0] === 'string' ? args[0] : args[0]?.url || '';
+
+      if (response.status === 401 && url.startsWith(API_BASE_URL) && !url.includes('/auth/login')) {
+        const data = await response.clone().json().catch(() => ({}));
+        const notice = data.message?.includes('deactivated')
+          ? data.message
+          : 'Your session has expired. Please log in again.';
+        localStorage.removeItem('ecotrack_token');
+        localStorage.removeItem('ecotrack_user');
+        setToken(null);
+        setUser(null);
+        setAuthNotice(notice);
+      }
+
+      return response;
+    };
+
+    return () => {
+      window.fetch = originalFetch;
+    };
+  }, [API_BASE_URL]);
 
   useEffect(() => {
     // Load stored auth details on app initialization and verify them with the server
@@ -76,6 +107,7 @@ export const AuthProvider = ({ children }) => {
 
     setToken(data.token);
     setUser(data.user);
+    setAuthNotice('');
     localStorage.setItem('ecotrack_token', data.token);
     localStorage.setItem('ecotrack_user', JSON.stringify(data.user));
 
@@ -115,7 +147,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, token, loading, authNotice, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
