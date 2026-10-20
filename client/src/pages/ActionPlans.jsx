@@ -10,6 +10,9 @@ const STATUS_PILLS = {
 
 const ActionPlans = () => {
   const { user, token } = useAuth();
+  const isAdmin = user?.role === 'Organization Admin';
+  // Admins default to the organization-wide option; officers to their own department
+  const defaultDepartment = isAdmin ? 'General Sustainability' : user?.department;
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
   const [plans, setPlans] = useState([]);
@@ -51,7 +54,7 @@ const ActionPlans = () => {
     id: null,
     actionName: '',
     description: '',
-    responsibleDepartment: user?.department || 'General Sustainability',
+    responsibleDepartment: defaultDepartment,
     startDate: '',
     targetDate: '',
     expectedCarbonReduction: '',
@@ -244,7 +247,7 @@ const ActionPlans = () => {
       id: null,
       actionName: '',
       description: '',
-      responsibleDepartment: user?.department || 'General Sustainability',
+      responsibleDepartment: defaultDepartment,
       startDate: plan.startDate ? plan.startDate.split('T')[0] : '',
       targetDate: plan.targetDate ? plan.targetDate.split('T')[0] : '',
       expectedCarbonReduction: '',
@@ -293,7 +296,7 @@ const ActionPlans = () => {
       id: null,
       actionName: '',
       description: '',
-      responsibleDepartment: user?.department || 'General Sustainability',
+      responsibleDepartment: defaultDepartment,
       startDate: '',
       targetDate: '',
       expectedCarbonReduction: '',
@@ -707,7 +710,7 @@ const ActionPlans = () => {
                     </div>
 
                     <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                      {new Date(plan.startDate).toLocaleDateString()} — {new Date(plan.targetDate).toLocaleDateString()}
+                      {new Date(plan.startDate).toLocaleDateString('en-IN')} — {new Date(plan.targetDate).toLocaleDateString('en-IN')}
                     </div>
 
                     <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'flex-end', marginTop: '0.5rem', flexWrap: 'wrap' }}>
@@ -798,7 +801,7 @@ const ActionPlans = () => {
                                   <span>Dept: <strong style={{ color: 'var(--text-main)' }}>{act.responsibleDepartment}</strong></span>
                                   <span>Target: <strong style={{ color: '#f59e0b' }}>{act.expectedCarbonReduction} tCO₂e</strong></span>
                                   <span>Realized: <strong style={{ color: 'var(--primary)' }}>{act.actualCarbonReduction || 0} tCO₂e</strong></span>
-                                  <span>Dates: {new Date(act.startDate).toLocaleDateString()} to {new Date(act.targetDate).toLocaleDateString()}</span>
+                                  <span>Dates: {new Date(act.startDate).toLocaleDateString('en-IN')} to {new Date(act.targetDate).toLocaleDateString('en-IN')}</span>
                                 </div>
                               </div>
 

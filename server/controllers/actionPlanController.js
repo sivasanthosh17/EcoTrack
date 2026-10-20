@@ -176,7 +176,8 @@ export const createActionPlan = async (req, res) => {
       emissionReductionTarget: target,
       status: status || 'Planned',
       overallProgress: 0,
-      department: req.user.department,
+      // Admin plans are organization-wide; officer plans belong to their department
+      department: req.user.role === 'Organization Admin' ? 'General Sustainability' : req.user.department,
       createdBy: req.user._id
     });
 

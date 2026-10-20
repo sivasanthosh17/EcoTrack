@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
 const STATUS_BADGES = {
-  Achieved: { bg: 'rgba(16, 185, 129, 0.18)', color: '#34d399', border: 'rgba(52, 211, 153, 0.3)', label: 'Achieved' },
-  'On Track': { bg: 'rgba(6, 182, 212, 0.18)', color: '#38bdf8', border: 'rgba(56, 189, 248, 0.3)', label: 'On Track' },
-  'At Risk': { bg: 'rgba(245, 158, 11, 0.18)', color: '#fbbf24', border: 'rgba(251, 191, 36, 0.3)', label: 'At Risk' },
-  'Off Track': { bg: 'rgba(239, 68, 68, 0.18)', color: '#f87171', border: 'rgba(248, 113, 113, 0.3)', label: 'Off Track' },
-  'Pending Data': { bg: 'rgba(148, 163, 184, 0.15)', color: '#94a3b8', border: 'rgba(148, 163, 184, 0.3)', label: 'Pending Data' }
+  Achieved: { bg: 'rgba(16, 185, 129, 0.15)', color: '#15803d', border: 'rgba(52, 211, 153, 0.4)', label: 'Achieved' },
+  'On Track': { bg: 'rgba(6, 182, 212, 0.15)', color: '#0369a1', border: 'rgba(56, 189, 248, 0.4)', label: 'On Track' },
+  'At Risk': { bg: 'rgba(245, 158, 11, 0.15)', color: '#b45309', border: 'rgba(251, 191, 36, 0.5)', label: 'At Risk' },
+  'Off Track': { bg: 'rgba(239, 68, 68, 0.12)', color: '#b91c1c', border: 'rgba(248, 113, 113, 0.4)', label: 'Off Track' },
+  'Pending Data': { bg: 'rgba(148, 163, 184, 0.15)', color: '#64748b', border: 'rgba(148, 163, 184, 0.4)', label: 'Pending Data' }
 };
 
 const CATEGORY_ICONS = {
@@ -23,6 +23,8 @@ const KPIs = () => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
   const isAdmin = user?.role === 'Organization Admin';
+  // Admins default to the organization-wide option; officers to their own department
+  const defaultDepartment = isAdmin ? 'General Sustainability' : user?.department;
 
   const [kpis, setKPIs] = useState([]);
   const [departments, setDepartments] = useState([]);
@@ -76,7 +78,7 @@ const KPIs = () => {
     unit: 'tCO2e',
     targetValue: '',
     reportingFrequency: 'Monthly',
-    department: user?.department || 'General Sustainability'
+    department: defaultDepartment
   });
 
   const [message, setMessage] = useState({ type: '', text: '' });
@@ -269,7 +271,7 @@ const KPIs = () => {
       unit: 'tCO2e',
       targetValue: '',
       reportingFrequency: 'Monthly',
-      department: user?.department || 'General Sustainability'
+      department: defaultDepartment
     });
     setIsEditing(false);
   };
@@ -288,8 +290,7 @@ const KPIs = () => {
       return 'Off Track';
     } else {
       if (val <= tgt) return 'Achieved';
-      if (val <= tgt * 1.15) return 'On Track';
-      if (val <= tgt * 1.30) return 'At Risk';
+      if (val <= tgt * 1.10) return 'At Risk';
       return 'Off Track';
     }
   };
@@ -653,18 +654,20 @@ const KPIs = () => {
             </select>
           </div>
 
-          <div>
-            <select
-              className="form-input"
-              value={filters.department}
-              onChange={(e) => setFilters({ ...filters, department: e.target.value })}
-            >
-              <option value="">All Departments</option>
-              {departments.map((d) => (
-                <option key={d._id} value={d.name}>{d.name}</option>
-              ))}
-            </select>
-          </div>
+          {isAdmin && (
+            <div>
+              <select
+                className="form-input"
+                value={filters.department}
+                onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+              >
+                <option value="">All Departments</option>
+                {departments.map((d) => (
+                  <option key={d._id} value={d.name}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <button
@@ -734,7 +737,7 @@ const KPIs = () => {
 
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>LATEST MEASURED:</span>
-                      <span style={{ fontSize: '1.1rem', fontWeight: 700, color: k.currentValue !== null ? 'var(--primary)' : 'var(--text-dim)' }}>
+                      <span style={{ fontSize: '1.1rem', fontWeight: 700, color: k.currentValue !== null ? (STATUS_BADGES[k.status]?.color || 'var(--text-main)') : 'var(--text-dim)' }}>
                         {k.currentValue !== null && k.currentValue !== undefined ? `${k.currentValue} ${k.unit}` : 'Not Measured'}
                       </span>
                     </div>

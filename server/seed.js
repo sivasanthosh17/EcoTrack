@@ -28,7 +28,7 @@ const seedUsers = async () => {
       email: 'officer@ecotrack.org',
       password: 'officer123',
       role: 'Department Officer',
-      department: 'Facilities & Energy'
+      department: 'Electrical'
     });
 
     console.log('[Seed] Default demo accounts created successfully:');

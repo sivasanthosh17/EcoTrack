@@ -10,22 +10,53 @@ export const AuthProvider = ({ children }) => {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
   useEffect(() => {
-    // Load stored auth details on app initialization
+    // Load stored auth details on app initialization and verify them with the server
     const storedToken = localStorage.getItem('ecotrack_token');
     const storedUser = localStorage.getItem('ecotrack_user');
 
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error('Failed to parse stored user session', e);
-        localStorage.removeItem('ecotrack_token');
-        localStorage.removeItem('ecotrack_user');
+    const clearSession = () => {
+      localStorage.removeItem('ecotrack_token');
+      localStorage.removeItem('ecotrack_user');
+    };
+
+    const restoreSession = async () => {
+      if (!storedToken || !storedUser) {
+        setLoading(false);
+        return;
       }
-    }
-    setLoading(false);
-  }, []);
+
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        const response = await fetch(`${API_BASE_URL}/auth/me`, {
+          headers: { Authorization: `Bearer ${storedToken}` }
+        });
+
+        if (response.status === 401) {
+          // Token expired or invalid: drop the stale session
+          clearSession();
+        } else {
+          const data = response.ok ? await response.json() : null;
+          const freshUser = data?.user || parsedUser;
+          setToken(storedToken);
+          setUser(freshUser);
+          localStorage.setItem('ecotrack_user', JSON.stringify(freshUser));
+        }
+      } catch (e) {
+        if (e instanceof SyntaxError) {
+          console.error('Failed to parse stored user session', e);
+          clearSession();
+        } else {
+          // Server unreachable: keep the stored session so the user is not logged out offline
+          setToken(storedToken);
+          setUser(JSON.parse(storedUser));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    restoreSession();
+  }, [API_BASE_URL]);
 
   // Login handler
   const login = async (email, password) => {

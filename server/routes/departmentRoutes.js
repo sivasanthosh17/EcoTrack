@@ -13,8 +13,8 @@ const router = express.Router();
 
 router.use(protect);
 
-// Users list for assignment dropdown
-router.get('/users', getSystemUsers);
+// Users list for assignment dropdown (admins only: it exposes every user's email)
+router.get('/users', authorize('Organization Admin'), getSystemUsers);
 
 // User assignment route
 router.put('/assign-user', authorize('Organization Admin'), assignUserToDepartment);

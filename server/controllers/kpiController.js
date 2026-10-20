@@ -24,9 +24,9 @@ export const calculateKPIStatus = (category, actualValue, targetValue) => {
     return 'Off Track';
   } else {
     // Lower actual value is better (e.g., Emissions, Waste, Water, Energy Reduction Targets)
+    // The target is a limit, so any value above it is not on track
     if (actualValue <= targetValue) return 'Achieved';
-    if (actualValue <= targetValue * 1.15) return 'On Track';
-    if (actualValue <= targetValue * 1.30) return 'At Risk';
+    if (actualValue <= targetValue * 1.10) return 'At Risk';
     return 'Off Track';
   }
 };

@@ -61,7 +61,7 @@ const seedDemoAccounts = async () => {
         email: 'officer@ecotrack.org',
         password: 'officer123',
         role: 'Department Officer',
-        department: 'Facilities & Energy'
+        department: 'Electrical'
       });
       console.log(`[Database Seed] Default demo accounts ready: admin@ecotrack.org / officer@ecotrack.org`);
     }

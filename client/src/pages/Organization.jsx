@@ -61,7 +61,8 @@ const Organization = () => {
   useEffect(() => {
     fetchOrganizationData();
     fetchDepartments();
-    fetchSystemUsers();
+    // The user list is only needed for admin-only forms
+    if (isAdmin) fetchSystemUsers();
   }, []);
 
   const fetchOrganizationData = async () => {
@@ -566,7 +567,7 @@ const Organization = () => {
 
                       <div>
                         <strong style={{ color: 'var(--text-dim)' }}>Assigned Personnel:</strong>{' '}
-                        <span className="status-pill online">{dept.memberCount || 0} Members</span>
+                        <span className="status-pill online">{dept.memberCount || 0} {dept.memberCount === 1 ? 'Member' : 'Members'}</span>
                       </div>
                     </div>
                   </div>

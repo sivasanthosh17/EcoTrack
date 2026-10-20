@@ -14,10 +14,15 @@ const DEFAULT_FACTORS = {
 
 const Emissions = () => {
   const { user, token } = useAuth();
+  const isAdmin = user?.role === 'Organization Admin';
+  // Admins default to the organization-wide option; officers to their own department
+  const defaultDepartment = isAdmin ? 'General Sustainability' : user?.department;
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
   const [emissions, setEmissions] = useState([]);
   const [departments, setDepartments] = useState([]);
+  // Officers can only pick their own department
+  const departmentOptions = isAdmin ? departments : departments.filter((d) => d.name === user?.department);
   const [totalCO2e, setTotalCO2e] = useState(0);
 
   // Filters state
@@ -41,7 +46,7 @@ const Emissions = () => {
 
   const [formData, setFormData] = useState({
     id: null,
-    department: user?.department || 'General Sustainability',
+    department: defaultDepartment,
     emissionSource: 'Electricity',
     scope: 'Scope 2',
     activityValue: '',
@@ -206,7 +211,7 @@ const Emissions = () => {
     const def = DEFAULT_FACTORS.Electricity;
     setFormData({
       id: null,
-      department: user?.department || 'General Sustainability',
+      department: defaultDepartment,
       emissionSource: 'Electricity',
       scope: def.scope,
       activityValue: '',
@@ -349,9 +354,10 @@ const Emissions = () => {
                   value={formData.department}
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   required
+                  disabled={!isAdmin}
                 >
-                  <option value="General Sustainability">General Sustainability</option>
-                  {departments.map((d) => (
+                  {isAdmin && <option value="General Sustainability">General Sustainability</option>}
+                  {departmentOptions.map((d) => (
                     <option key={d._id} value={d.name}>
                       {d.name} ({d.code})
                     </option>
@@ -595,7 +601,7 @@ const Emissions = () => {
                   <td style={{ padding: '0.85rem 0.5rem', fontWeight: 700, color: 'var(--primary)' }}>
                     {item.calculatedCO2e?.toFixed(4)} tCO₂e
                   </td>
-                  <td style={{ padding: '0.85rem 0.5rem', color: 'var(--text-muted)' }}>
+                  <td style={{ padding: '0.85rem 0.5rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                     {item.reportingPeriod}
                   </td>
                   <td style={{ padding: '0.85rem 0.5rem', fontSize: '0.85rem', color: 'var(--text-dim)' }}>

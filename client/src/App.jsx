@@ -24,7 +24,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Navigate to={user ? '/dashboard' : '/login'} replace />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
             <Route path="/register" element={<Navigate to="/login" replace />} />
 
             {/* Protected Routes (Logged in Users) */}

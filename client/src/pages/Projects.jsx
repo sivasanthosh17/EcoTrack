@@ -10,10 +10,15 @@ const STATUS_COLORS = {
 
 const Projects = () => {
   const { user, token } = useAuth();
+  const isAdmin = user?.role === 'Organization Admin';
+  // Admins default to the organization-wide option; officers to their own department
+  const defaultDepartment = isAdmin ? 'General Sustainability' : user?.department;
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
   const [projects, setProjects] = useState([]);
   const [departments, setDepartments] = useState([]);
+  // Officers can only pick their own department
+  const departmentOptions = isAdmin ? departments : departments.filter((d) => d.name === user?.department);
   const [summary, setSummary] = useState({
     totalBudget: 0,
     totalExpectedReduction: 0,
@@ -42,7 +47,7 @@ const Projects = () => {
     id: null,
     projectName: '',
     description: '',
-    department: user?.department || 'General Sustainability',
+    department: defaultDepartment,
     startDate: '',
     targetCompletionDate: '',
     budget: '',
@@ -219,7 +224,7 @@ const Projects = () => {
       id: null,
       projectName: '',
       description: '',
-      department: user?.department || 'General Sustainability',
+      department: defaultDepartment,
       startDate: '',
       targetCompletionDate: '',
       budget: '',
@@ -273,7 +278,7 @@ const Projects = () => {
         <div className="card">
           <span style={{ fontSize: '0.8rem', color: 'var(--text-dim)', fontWeight: 600 }}>CUMULATIVE BUDGET</span>
           <h2 style={{ fontSize: '1.8rem', color: 'var(--accent)', marginTop: '0.2rem' }}>
-            ${summary.totalBudget?.toLocaleString()}
+            ₹{summary.totalBudget?.toLocaleString('en-IN')}
           </h2>
           <span style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>Allocated Capital</span>
         </div>
@@ -404,9 +409,10 @@ const Projects = () => {
                   value={formData.department}
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   required
+                  disabled={!isAdmin}
                 >
-                  <option value="General Sustainability">General Sustainability</option>
-                  {departments.map((d) => (
+                  {isAdmin && <option value="General Sustainability">General Sustainability</option>}
+                  {departmentOptions.map((d) => (
                     <option key={d._id} value={d.name}>
                       {d.name} ({d.code})
                     </option>
@@ -451,7 +457,7 @@ const Projects = () => {
               </div>
 
               <div className="form-group">
-                <label className="form-label">Capital Budget ($ USD)</label>
+                <label className="form-label">Capital Budget (₹ INR)</label>
                 <input
                   type="number"
                   step="any"
@@ -549,18 +555,20 @@ const Projects = () => {
             </select>
           </div>
 
-          <div>
-            <select
-              className="form-input"
-              value={filters.department}
-              onChange={(e) => setFilters({ ...filters, department: e.target.value })}
-            >
-              <option value="">Filter by All Departments</option>
-              {departments.map((d) => (
-                <option key={d._id} value={d.name}>{d.name}</option>
-              ))}
-            </select>
-          </div>
+          {isAdmin && (
+            <div>
+              <select
+                className="form-input"
+                value={filters.department}
+                onChange={(e) => setFilters({ ...filters, department: e.target.value })}
+              >
+                <option value="">Filter by All Departments</option>
+                {departments.map((d) => (
+                  <option key={d._id} value={d.name}>{d.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <button
@@ -636,7 +644,7 @@ const Projects = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', fontSize: '0.85rem', backgroundColor: 'var(--bg-primary)', padding: '0.85rem', borderRadius: 'var(--radius-sm)', marginBottom: '1rem' }}>
                     <div>
                       <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>BUDGET</span>
-                      <strong style={{ color: 'var(--text-main)' }}>${p.budget ? p.budget.toLocaleString() : '0'}</strong>
+                      <strong style={{ color: 'var(--text-main)' }}>₹{p.budget ? p.budget.toLocaleString('en-IN') : '0'}</strong>
                     </div>
 
                     <div>
@@ -647,7 +655,7 @@ const Projects = () => {
                     <div>
                       <span style={{ color: 'var(--text-dim)', display: 'block', fontSize: '0.75rem' }}>TIMELINE</span>
                       <span style={{ color: 'var(--text-muted)' }}>
-                        {p.startDate ? new Date(p.startDate).toLocaleDateString() : 'N/A'} - {p.targetCompletionDate ? new Date(p.targetCompletionDate).toLocaleDateString() : 'N/A'}
+                        {p.startDate ? new Date(p.startDate).toLocaleDateString('en-IN') : 'N/A'} - {p.targetCompletionDate ? new Date(p.targetCompletionDate).toLocaleDateString('en-IN') : 'N/A'}
                       </span>
                     </div>
 
