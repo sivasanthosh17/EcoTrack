@@ -1,23 +1,53 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
+// Default factors with their sources; users can still enter their own factor
 const DEFAULT_FACTORS = {
-  Electricity: { factor: 0.00085, unit: 'kWh', scope: 'Scope 2', label: 'Grid Electricity (0.85 kg CO2e/kWh)' },
-  Diesel: { factor: 0.00268, unit: 'Liters', scope: 'Scope 1', label: 'Diesel Fuel (2.68 kg CO2e/Liter)' },
-  Petrol: { factor: 0.00231, unit: 'Liters', scope: 'Scope 1', label: 'Motor Gasoline (2.31 kg CO2e/Liter)' },
-  'Natural Gas': { factor: 0.0019, unit: 'm3', scope: 'Scope 1', label: 'Natural Gas (1.90 kg CO2e/m³)' },
-  Transportation: { factor: 0.00017, unit: 'km', scope: 'Scope 3', label: 'Fleet & Commute (0.17 kg CO2e/km)' },
-  Waste: { factor: 0.0005, unit: 'kg', scope: 'Scope 3', label: 'Solid Waste (0.50 kg CO2e/kg)' },
-  Water: { factor: 0.0003, unit: 'm3', scope: 'Scope 3', label: 'Water Supply (0.30 kg CO2e/m³)' },
-  Other: { factor: 0.0010, unit: 'Metric Tons', scope: 'Scope 3', label: 'Custom Activity' }
+  Electricity: {
+    factor: 0.000727, unit: 'kWh', scope: 'Scope 2', label: 'Grid Electricity (0.727 kg CO2/kWh)',
+    source: 'CEA CO2 Baseline Database v20.0 (FY 2023-24), Indian grid weighted average 0.727 tCO2/MWh. Check cea.nic.in for the latest version.'
+  },
+  Diesel: {
+    factor: 0.00268, unit: 'Liters', scope: 'Scope 1', label: 'Diesel Fuel (2.68 kg CO2/Liter)',
+    source: 'IPCC 2006 Guidelines, Vol. 2 default: 74,100 kg CO2/TJ x NCV 43.0 TJ/Gg x density 0.84 kg/L.'
+  },
+  Petrol: {
+    factor: 0.00231, unit: 'Liters', scope: 'Scope 1', label: 'Motor Gasoline (2.31 kg CO2/Liter)',
+    source: 'IPCC 2006 Guidelines, Vol. 2 default: 69,300 kg CO2/TJ x NCV 44.3 TJ/Gg x density ~0.75 kg/L.'
+  },
+  'Natural Gas': {
+    factor: 0.0019, unit: 'm3', scope: 'Scope 1', label: 'Natural Gas (1.90 kg CO2/m³)',
+    source: 'IPCC 2006 Guidelines, Vol. 2 default: 56,100 kg CO2/TJ x NCV 48.0 TJ/Gg x density ~0.7 kg/m³.'
+  },
+  Transportation: {
+    factor: 0.00017, unit: 'km', scope: 'Scope 3', label: 'Fleet & Commute (0.17 kg CO2e/km)',
+    source: 'Indicative estimate. Replace with a verified factor for your vehicle type.'
+  },
+  Waste: {
+    factor: 0.0005, unit: 'kg', scope: 'Scope 3', label: 'Solid Waste (0.50 kg CO2e/kg)',
+    source: 'Indicative estimate. Replace with a verified factor for your disposal method.'
+  },
+  Water: {
+    factor: 0.0003, unit: 'm3', scope: 'Scope 3', label: 'Water Supply (0.30 kg CO2e/m³)',
+    source: 'Indicative estimate. Replace with a verified factor from your water utility.'
+  },
+  Other: {
+    factor: 0.0010, unit: 'Metric Tons', scope: 'Scope 3', label: 'Custom Activity',
+    source: 'No default. Enter a factor from a documented source.'
+  }
 };
 
 const Emissions = () => {
   const { user, token } = useAuth();
+  const isAdmin = user?.role === 'Organization Admin';
+  // Admins default to the organization-wide option; officers to their own department
+  const defaultDepartment = isAdmin ? 'General Sustainability' : user?.department;
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
   const [emissions, setEmissions] = useState([]);
   const [departments, setDepartments] = useState([]);
+  // Officers can only pick their own department
+  const departmentOptions = isAdmin ? departments : departments.filter((d) => d.name === user?.department);
   const [totalCO2e, setTotalCO2e] = useState(0);
 
   // Filters state
@@ -41,7 +71,7 @@ const Emissions = () => {
 
   const [formData, setFormData] = useState({
     id: null,
-    department: user?.department || 'General Sustainability',
+    department: defaultDepartment,
     emissionSource: 'Electricity',
     scope: 'Scope 2',
     activityValue: '',
@@ -206,7 +236,7 @@ const Emissions = () => {
     const def = DEFAULT_FACTORS.Electricity;
     setFormData({
       id: null,
-      department: user?.department || 'General Sustainability',
+      department: defaultDepartment,
       emissionSource: 'Electricity',
       scope: def.scope,
       activityValue: '',
@@ -349,9 +379,10 @@ const Emissions = () => {
                   value={formData.department}
                   onChange={(e) => setFormData({ ...formData, department: e.target.value })}
                   required
+                  disabled={!isAdmin}
                 >
-                  <option value="General Sustainability">General Sustainability</option>
-                  {departments.map((d) => (
+                  {isAdmin && <option value="General Sustainability">General Sustainability</option>}
+                  {departmentOptions.map((d) => (
                     <option key={d._id} value={d.name}>
                       {d.name} ({d.code})
                     </option>
@@ -395,11 +426,19 @@ const Emissions = () => {
                   type="number"
                   step="any"
                   className="form-input"
-                  placeholder="e.g. 0.00085"
+                  placeholder="e.g. 0.000727"
                   value={formData.emissionFactor}
                   onChange={(e) => setFormData({ ...formData, emissionFactor: e.target.value })}
                   required
                 />
+                {DEFAULT_FACTORS[formData.emissionSource] && (
+                  <small style={{ display: 'block', marginTop: '0.35rem', color: 'var(--text-muted)', fontSize: '0.78rem', lineHeight: 1.4 }}>
+                    {Number(formData.emissionFactor) === DEFAULT_FACTORS[formData.emissionSource].factor
+                      ? 'Source: '
+                      : `Custom factor entered. Default ${DEFAULT_FACTORS[formData.emissionSource].factor} from: `}
+                    {DEFAULT_FACTORS[formData.emissionSource].source}
+                  </small>
+                )}
               </div>
 
               <div className="form-group">
@@ -595,7 +634,7 @@ const Emissions = () => {
                   <td style={{ padding: '0.85rem 0.5rem', fontWeight: 700, color: 'var(--primary)' }}>
                     {item.calculatedCO2e?.toFixed(4)} tCO₂e
                   </td>
-                  <td style={{ padding: '0.85rem 0.5rem', color: 'var(--text-muted)' }}>
+                  <td style={{ padding: '0.85rem 0.5rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>
                     {item.reportingPeriod}
                   </td>
                   <td style={{ padding: '0.85rem 0.5rem', fontSize: '0.85rem', color: 'var(--text-dim)' }}>

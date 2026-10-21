@@ -15,7 +15,7 @@ export const getDepartments = async (req, res) => {
     // Attach user count for each department
     const departmentsWithUserCount = await Promise.all(
       departments.map(async (dept) => {
-        const userCount = await User.countDocuments({ department: dept.name });
+        const userCount = await User.countDocuments({ department: dept.name, isActive: { $ne: false } });
         return {
           ...dept.toObject(),
           memberCount: userCount
@@ -213,7 +213,7 @@ export const assignUserToDepartment = async (req, res) => {
 /**
  * @desc    Get all system users (for user assignment selection)
  * @route   GET /api/departments/users
- * @access  Private (All authenticated users)
+ * @access  Private (Organization Admin)
  */
 export const getSystemUsers = async (req, res) => {
   try {
@@ -226,6 +226,60 @@ export const getSystemUsers = async (req, res) => {
     res.status(500).json({
       status: 'error',
       message: 'Failed to fetch users'
+    });
+  }
+};
+
+/**
+ * @desc    Activate or deactivate a user account
+ * @route   PUT /api/departments/users/:id/status
+ * @access  Private (Organization Admin)
+ */
+export const setUserStatus = async (req, res) => {
+  try {
+    const { isActive } = req.body;
+
+    if (typeof isActive !== 'boolean') {
+      return res.status(400).json({
+        status: 'error',
+        message: 'Please specify whether the account should be active'
+      });
+    }
+
+    if (String(req.params.id) === String(req.user._id)) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'You cannot deactivate your own account'
+      });
+    }
+
+    const user = await User.findById(req.params.id);
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found'
+      });
+    }
+
+    user.isActive = isActive;
+    await user.save();
+
+    res.status(200).json({
+      status: 'success',
+      message: `${user.name} has been ${isActive ? 'reactivated' : 'deactivated'}`,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        department: user.department,
+        isActive: user.isActive
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'Failed to update account status'
     });
   }
 };

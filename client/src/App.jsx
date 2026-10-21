@@ -9,6 +9,7 @@ import KPIs from './pages/KPIs';
 import ActionPlans from './pages/ActionPlans';
 import Reports from './pages/Reports';
 import Dashboard from './pages/Dashboard';
+import ChangePassword from './pages/ChangePassword';
 import NotFound from './pages/NotFound';
 import ProtectedRoute from './components/ProtectedRoute';
 import { useAuth } from './context/AuthContext';
@@ -24,7 +25,7 @@ function App() {
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<Navigate to={user ? '/dashboard' : '/login'} replace />} />
-            <Route path="/login" element={<Login />} />
+            <Route path="/login" element={user ? <Navigate to="/dashboard" replace /> : <Login />} />
             <Route path="/register" element={<Navigate to="/login" replace />} />
 
             {/* Protected Routes (Logged in Users) */}
@@ -83,6 +84,15 @@ function App() {
                   <Dashboard />
                 </ProtectedRoute>
               } 
+            />
+
+            <Route
+              path="/change-password"
+              element={
+                <ProtectedRoute>
+                  <ChangePassword />
+                </ProtectedRoute>
+              }
             />
 
             {/* 404 Route */}

@@ -105,6 +105,7 @@ a:hover { text-decoration: underline; }
   font-size: 0.65rem; font-weight: 600;
   background: var(--green-light); color: var(--green);
   padding: 2px 8px; border-radius: 4px;
+  white-space: nowrap; flex-shrink: 0;
 }
 .nav-links { list-style: none; display: flex; align-items: center; gap: 16px; }
 .nav-link {
@@ -169,6 +170,10 @@ a:hover { text-decoration: underline; }
 }
 .role-badge.admin { background: rgba(59,130,246,0.25); color: #93c5fd; }
 .role-badge.officer { background: rgba(22,163,74,0.25); color: #86efac; }
+/* Badges on the light page area need darker text to stay readable */
+.main-content .role-badge { font-size: 0.72rem; padding: 3px 8px; }
+.main-content .role-badge.admin { background: #dbeafe; color: #1d4ed8; }
+.main-content .role-badge.officer { background: #dcfce7; color: #15803d; }
 
 .sidebar-nav { flex: 1; padding: 12px 8px; overflow-y: auto; }
 .nav-section-title {
@@ -264,6 +269,7 @@ a:hover { text-decoration: underline; }
 .alert { padding: 10px 14px; border-radius: 6px; font-size: 0.88rem; margin-bottom: 16px; }
 .alert-danger { background: var(--red-light); border: 1px solid #fecaca; color: var(--red); }
 .alert-success { background: var(--green-light); border: 1px solid #bbf7d0; color: var(--green); }
+.alert-warning { background: #fffbeb; border: 1px solid #fde68a; color: #92400e; }
 
 /* ---- Empty state ---- */
 .empty-state {
@@ -405,6 +411,7 @@ a:hover { text-decoration: underline; }
   display: inline-flex; align-items: center; gap: 5px;
   font-size: 0.8rem; padding: 3px 10px;
   border-radius: 999px; font-weight: 600;
+  white-space: nowrap; flex-shrink: 0;
 }
 .status-pill.online { background: var(--green-light); color: var(--green); }
 .status-pill.offline { background: var(--red-light); color: var(--red); }

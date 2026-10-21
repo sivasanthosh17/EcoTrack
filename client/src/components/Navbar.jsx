@@ -102,6 +102,15 @@ const Navbar = () => {
               </NavLink>
             </li>
           </ul>
+
+          <div className="nav-section-title" style={{ marginTop: '1rem' }}>Account</div>
+          <ul className="sidebar-links">
+            <li>
+              <NavLink to="/change-password" className={({ isActive }) => isActive ? 'sidebar-link active' : 'sidebar-link'} onClick={closeMobile}>
+                Change Password
+              </NavLink>
+            </li>
+          </ul>
         </nav>
 
         <div className="sidebar-footer">

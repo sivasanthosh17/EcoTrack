@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
       default: 'General Sustainability'
+    },
+    // Deactivated users keep their history but cannot log in
+    isActive: {
+      type: Boolean,
+      default: true
     }
   },
   {

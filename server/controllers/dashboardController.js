@@ -3,7 +3,6 @@ import Project from '../models/Project.js';
 import KPI from '../models/KPI.js';
 import KPIMeasurement from '../models/KPIMeasurement.js';
 import ActionPlan from '../models/ActionPlan.js';
-import PlanAction from '../models/PlanAction.js';
 
 /**
  * @desc    Get aggregated real-time EcoTrack dashboard metrics & chart data
@@ -68,14 +67,12 @@ export const getDashboardStats = async (req, res) => {
 
     // 4. Carbon Reduction Projects Aggregation
     const projects = await Project.find(departmentFilter).sort({ createdAt: -1 });
-    const planActions = await PlanAction.find(req.user.role === 'Organization Admin'
-      ? {}
-      : { responsibleDepartment: req.user.department });
 
     const activeProjectsCount = projects.filter(p => p.status === 'In Progress' || p.status === 'Planned').length;
+    // Realized reduction comes from projects only: action-plan actions track the same
+    // work at plan level, so adding them would count savings twice (matches Reports)
     const projectActualReductionSum = projects.reduce((acc, p) => acc + (p.actualCarbonReduction || 0), 0);
-    const actionActualReductionSum = planActions.reduce((acc, a) => acc + (a.actualCarbonReduction || 0), 0);
-    const totalCarbonReduction = Number((projectActualReductionSum + actionActualReductionSum).toFixed(2));
+    const totalCarbonReduction = Number(projectActualReductionSum.toFixed(2));
 
     const projectReductionChart = {
       labels: projects.map(p => p.projectName.length > 20 ? p.projectName.substring(0, 18) + '...' : p.projectName),

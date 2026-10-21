@@ -2,15 +2,40 @@ import Emission from '../models/Emission.js';
 import { canAccessDepartment } from '../middleware/authMiddleware.js';
 
 // Standardized GHG Emission Factors (in metric tons CO2e per activity unit)
+// Keep in sync with DEFAULT_FACTORS in client/src/pages/Emissions.jsx
 export const DEFAULT_EMISSION_FACTORS = {
-  Electricity: { factor: 0.00085, unit: 'kWh', scope: 'Scope 2', label: 'Grid Electricity (0.85 kg CO2e/kWh)' },
-  Diesel: { factor: 0.00268, unit: 'Liters', scope: 'Scope 1', label: 'Diesel Fuel (2.68 kg CO2e/Liter)' },
-  Petrol: { factor: 0.00231, unit: 'Liters', scope: 'Scope 1', label: 'Motor Gasoline (2.31 kg CO2e/Liter)' },
-  'Natural Gas': { factor: 0.0019, unit: 'm3', scope: 'Scope 1', label: 'Natural Gas (1.90 kg CO2e/m³)' },
-  Transportation: { factor: 0.00017, unit: 'km', scope: 'Scope 3', label: 'Fleet & Commute (0.17 kg CO2e/km)' },
-  Waste: { factor: 0.0005, unit: 'kg', scope: 'Scope 3', label: 'Solid Waste (0.50 kg CO2e/kg)' },
-  Water: { factor: 0.0003, unit: 'm3', scope: 'Scope 3', label: 'Water Supply (0.30 kg CO2e/m³)' },
-  Other: { factor: 0.0010, unit: 'Metric Tons', scope: 'Scope 3', label: 'Custom Activity' }
+  Electricity: {
+    factor: 0.000727, unit: 'kWh', scope: 'Scope 2', label: 'Grid Electricity (0.727 kg CO2/kWh)',
+    source: 'CEA CO2 Baseline Database v20.0 (FY 2023-24), Indian grid weighted average 0.727 tCO2/MWh. Check cea.nic.in for the latest version.'
+  },
+  Diesel: {
+    factor: 0.00268, unit: 'Liters', scope: 'Scope 1', label: 'Diesel Fuel (2.68 kg CO2/Liter)',
+    source: 'IPCC 2006 Guidelines, Vol. 2 default: 74,100 kg CO2/TJ x NCV 43.0 TJ/Gg x density 0.84 kg/L.'
+  },
+  Petrol: {
+    factor: 0.00231, unit: 'Liters', scope: 'Scope 1', label: 'Motor Gasoline (2.31 kg CO2/Liter)',
+    source: 'IPCC 2006 Guidelines, Vol. 2 default: 69,300 kg CO2/TJ x NCV 44.3 TJ/Gg x density ~0.75 kg/L.'
+  },
+  'Natural Gas': {
+    factor: 0.0019, unit: 'm3', scope: 'Scope 1', label: 'Natural Gas (1.90 kg CO2/m³)',
+    source: 'IPCC 2006 Guidelines, Vol. 2 default: 56,100 kg CO2/TJ x NCV 48.0 TJ/Gg x density ~0.7 kg/m³.'
+  },
+  Transportation: {
+    factor: 0.00017, unit: 'km', scope: 'Scope 3', label: 'Fleet & Commute (0.17 kg CO2e/km)',
+    source: 'Indicative estimate. Replace with a verified factor for your vehicle type.'
+  },
+  Waste: {
+    factor: 0.0005, unit: 'kg', scope: 'Scope 3', label: 'Solid Waste (0.50 kg CO2e/kg)',
+    source: 'Indicative estimate. Replace with a verified factor for your disposal method.'
+  },
+  Water: {
+    factor: 0.0003, unit: 'm3', scope: 'Scope 3', label: 'Water Supply (0.30 kg CO2e/m³)',
+    source: 'Indicative estimate. Replace with a verified factor from your water utility.'
+  },
+  Other: {
+    factor: 0.0010, unit: 'Metric Tons', scope: 'Scope 3', label: 'Custom Activity',
+    source: 'No default. Enter a factor from a documented source.'
+  }
 };
 
 /**

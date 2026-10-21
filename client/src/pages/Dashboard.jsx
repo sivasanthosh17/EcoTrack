@@ -37,6 +37,10 @@ ChartJS.register(
   Filler
 );
 
+// Match chart text to the app's font and light theme
+ChartJS.defaults.font.family = "'Inter', sans-serif";
+ChartJS.defaults.color = '#64748b';
+
 const Dashboard = () => {
   const { user, token } = useAuth();
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
@@ -138,12 +142,12 @@ const Dashboard = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } } },
+      legend: { labels: { color: '#64748b' } },
       tooltip: { mode: 'index', intersect: false }
     },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      x: { ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } },
+      y: { ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } }
     }
   };
 
@@ -157,7 +161,7 @@ const Dashboard = () => {
           '#38bdf8', '#f59e0b', '#34d399', '#ef4444', '#a855f7', '#06b6d4', '#ec4899', '#64748b'
         ],
         borderWidth: 2,
-        borderColor: '#141c26'
+        borderColor: '#ffffff'
       }
     ]
   };
@@ -166,7 +170,7 @@ const Dashboard = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: 'right', labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } } }
+      legend: { position: 'right', labels: { color: '#64748b' } }
     }
   };
 
@@ -193,11 +197,11 @@ const Dashboard = () => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { labels: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans' } } }
+      legend: { labels: { color: '#64748b' } }
     },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      x: { ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } },
+      y: { ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } }
     }
   };
 
@@ -221,8 +225,8 @@ const Dashboard = () => {
       legend: { display: false }
     },
     scales: {
-      x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.05)' } },
-      y: { ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } }
+      x: { ticks: { color: '#64748b' }, grid: { color: '#e2e8f0' } },
+      y: { ticks: { color: '#64748b', stepSize: 1 }, grid: { color: '#e2e8f0' } }
     }
   };
 
@@ -404,7 +408,7 @@ const Dashboard = () => {
                 </div>
                 <div style={{ textAlign: 'right', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
                   <div>Logged by <strong>{act.user}</strong></div>
-                  <div>{new Date(act.timestamp).toLocaleString()}</div>
+                  <div>{new Date(act.timestamp).toLocaleString('en-IN')}</div>
                 </div>
               </div>
             ))}

@@ -25,6 +25,9 @@ const seedGccDemoData = async () => {
 
     const officer = await User.findOne({ email: 'officer@ecotrack.org' }) || admin;
 
+    // Credit the demo officer only for their own department; other records come from the admin
+    const recorderFor = (department) => (officer.department === department ? officer._id : admin._id);
+
     const demoPlans = await ActionPlan.find({ planName: { $regex: `^${DEMO_PREFIX}` } }).select('_id');
     await PlanAction.deleteMany({ plan: { $in: demoPlans.map((plan) => plan._id) } });
     await ActionPlan.deleteMany({ _id: { $in: demoPlans.map((plan) => plan._id) } });
@@ -45,7 +48,6 @@ const seedGccDemoData = async () => {
         calculatedCO2e: 106.25,
         reportingPeriod: '2026-09',
         notes: DEMO_NOTE,
-        recordedBy: officer._id
       },
       {
         organization: 'Greater Chennai Corporation',
@@ -58,7 +60,6 @@ const seedGccDemoData = async () => {
         calculatedCO2e: 49.58,
         reportingPeriod: '2026-09',
         notes: DEMO_NOTE,
-        recordedBy: officer._id
       },
       {
         organization: 'Greater Chennai Corporation',
@@ -71,7 +72,6 @@ const seedGccDemoData = async () => {
         calculatedCO2e: 21,
         reportingPeriod: '2026-09',
         notes: DEMO_NOTE,
-        recordedBy: officer._id
       },
       {
         organization: 'Greater Chennai Corporation',
@@ -84,10 +84,9 @@ const seedGccDemoData = async () => {
         calculatedCO2e: 45.9,
         reportingPeriod: '2026-09',
         notes: DEMO_NOTE,
-        recordedBy: officer._id
       }
     ];
-    await Emission.insertMany(emissions);
+    await Emission.insertMany(emissions.map((e) => ({ ...e, recordedBy: recorderFor(e.department) })));
 
     const projects = [
       {
@@ -180,7 +179,7 @@ const seedGccDemoData = async () => {
         reportingPeriod: '2026-09',
         actualValue: kpi.currentValue,
         notes: DEMO_NOTE,
-        recordedBy: officer._id
+        recordedBy: recorderFor(kpi.department)
       }))
     );
 
