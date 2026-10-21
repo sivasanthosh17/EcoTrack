@@ -16,6 +16,11 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 // Load environment variables from .env file
 dotenv.config();
 
+if (!process.env.JWT_SECRET) {
+  console.error('[Server] JWT_SECRET is not set. Add it to server/.env before starting.');
+  process.exit(1);
+}
+
 // Initialize Express app
 const app = express();
 

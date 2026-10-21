@@ -1,0 +1,89 @@
+{
+  "source": {
+    "organization": "Greater Chennai Corporation",
+    "retrievedOn": "2026-09-30",
+    "officialSources": [
+      "https://chennaicorporation.gov.in/gcc/",
+      "https://chennaicorporation.gov.in/gcc/department/",
+      "https://chennaicorporation.gov.in/gcc/pdf/ClimateBudget2025-2026.pdf",
+      "https://chennaicorporation.gov.in/gcc/Budget_2025-2026"
+    ],
+    "notes": "Department names are taken from the official GCC department directory. No emissions measurements, officer identities, or KPI values are included because an official structured numerical dataset was not available from the reviewed sources."
+  },
+  "organization": {
+    "name": "Greater Chennai Corporation",
+    "orgType": "Municipality",
+    "address": "Chennai, Tamil Nadu, India",
+    "contactEmail": "",
+    "contactPhone": "1913",
+    "website": "https://chennaicorporation.gov.in/gcc/"
+  },
+  "departments": [
+    {
+      "name": "Health",
+      "code": "GCC-HEALTH",
+      "description": "Greater Chennai Corporation Health Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Revenue",
+      "code": "GCC-REVENUE",
+      "description": "Greater Chennai Corporation Revenue Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Education",
+      "code": "GCC-EDUCATION",
+      "description": "Greater Chennai Corporation Education Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Town Planning",
+      "code": "GCC-TOWN-PLANNING",
+      "description": "Greater Chennai Corporation Town Planning Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Electrical",
+      "code": "GCC-ELECTRICAL",
+      "description": "Greater Chennai Corporation Electrical Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Roads",
+      "code": "GCC-ROADS",
+      "description": "Greater Chennai Corporation Roads Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Bridges",
+      "code": "GCC-BRIDGES",
+      "description": "Greater Chennai Corporation Bridges Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Parks",
+      "code": "GCC-PARKS",
+      "description": "Greater Chennai Corporation Parks Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Buildings",
+      "code": "GCC-BUILDINGS",
+      "description": "Greater Chennai Corporation Buildings Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Solid Waste Management",
+      "code": "GCC-SWM",
+      "description": "Greater Chennai Corporation Solid Waste Management Department",
+      "location": "Chennai, Tamil Nadu"
+    },
+    {
+      "name": "Storm Water Drain",
+      "code": "GCC-SWD",
+      "description": "Greater Chennai Corporation Storm Water Drain Department",
+      "location": "Chennai, Tamil Nadu"
+    }
+  ]
+}

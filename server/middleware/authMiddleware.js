@@ -18,7 +18,7 @@ export const protect = async (req, res, next) => {
       // Verify token
       const decoded = jwt.verify(
         token,
-        process.env.JWT_SECRET || 'ecotrack_super_secret_jwt_key_2026'
+        process.env.JWT_SECRET
       );
 
       // Fetch user details from database excluding password

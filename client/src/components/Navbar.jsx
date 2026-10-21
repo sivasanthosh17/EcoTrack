@@ -48,7 +48,6 @@ const Navbar = () => {
         <div className="sidebar-header">
           <Link to="/dashboard" className="brand-logo" onClick={closeMobile}>
             EcoTrack
-            <span className="brand-badge">v1.0</span>
           </Link>
         </div>
 

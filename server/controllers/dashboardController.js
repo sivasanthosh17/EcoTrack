@@ -12,13 +12,31 @@ import PlanAction from '../models/PlanAction.js';
  */
 export const getDashboardStats = async (req, res) => {
   try {
+    const { period = 'all' } = req.query;
     const departmentFilter = req.user.role === 'Organization Admin'
       ? {}
       : { department: req.user.department };
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const quarterStart = Math.floor(today.getMonth() / 3) * 3 + 1;
+    const quarterMonths = [0, 1, 2].map((offset) => (
+      String(quarterStart + offset).padStart(2, '0')
+    ));
+    const periodPattern = period === 'month'
+      ? `^${year}-${month}`
+      : period === 'quarter'
+        ? `^${year}-(${quarterMonths.join('|')})`
+        : period === 'year'
+          ? `^${year}`
+          : null;
+    const emissionFilter = periodPattern
+      ? { ...departmentFilter, reportingPeriod: { $regex: periodPattern } }
+      : departmentFilter;
 
     // 1. Total CO2e Emissions Aggregation
     const emissionTotalAgg = await Emission.aggregate([
-      { $match: departmentFilter },
+      { $match: emissionFilter },
       { $group: { _id: null, totalCO2e: { $sum: '$calculatedCO2e' }, count: { $sum: 1 } } }
     ]);
     const totalCO2e = emissionTotalAgg[0] ? Number(emissionTotalAgg[0].totalCO2e.toFixed(2)) : 0;
@@ -26,7 +44,7 @@ export const getDashboardStats = async (req, res) => {
 
     // 2. Emissions Breakdown by Source
     const sourceBreakdown = await Emission.aggregate([
-      { $match: departmentFilter },
+      { $match: emissionFilter },
       { $group: { _id: '$emissionSource', totalCO2e: { $sum: '$calculatedCO2e' }, count: { $sum: 1 } } },
       { $sort: { totalCO2e: -1 } }
     ]);
@@ -38,7 +56,7 @@ export const getDashboardStats = async (req, res) => {
 
     // 3. Monthly Emission Trend
     const monthlyTrendAgg = await Emission.aggregate([
-      { $match: departmentFilter },
+      { $match: emissionFilter },
       { $group: { _id: '$reportingPeriod', totalCO2e: { $sum: '$calculatedCO2e' } } },
       { $sort: { _id: 1 } }
     ]);
@@ -103,7 +121,7 @@ export const getDashboardStats = async (req, res) => {
       : 0;
 
     // 7. Recent System Activity Stream
-    const recentEmissions = await Emission.find(departmentFilter)
+    const recentEmissions = await Emission.find(emissionFilter)
       .populate('recordedBy', 'name email')
       .sort({ createdAt: -1 })
       .limit(4);
@@ -151,6 +169,7 @@ export const getDashboardStats = async (req, res) => {
         totalKPIsCount: kpis.length,
         totalActionPlansCount: actionPlans.length
       },
+      period,
       charts: {
         emissionsBySource,
         emissionTrend,
