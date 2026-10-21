@@ -232,4 +232,4 @@ docs/screenshots/         images used in this README
 
 ## Author
 
-Siva Santhosh V
+Siva Santhosh
