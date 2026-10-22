@@ -12,6 +12,11 @@ const kpiSchema = new mongoose.Schema(
       enum: ['Energy', 'Water', 'Waste', 'Transportation', 'Emissions', 'Renewable Energy'],
       required: [true, 'Please select a category']
     },
+    goalDirection: {
+      type: String,
+      enum: ['lower', 'higher']
+      // Not set on older KPIs: getGoalDirection() falls back to the category default
+    },
     description: {
       type: String,
       trim: true

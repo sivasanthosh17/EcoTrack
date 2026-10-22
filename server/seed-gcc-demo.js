@@ -150,6 +150,7 @@ const seedGccDemoData = async () => {
       {
         kpiName: `${DEMO_PREFIX} Waste segregation rate`,
         category: 'Waste',
+        goalDirection: 'higher',
         description: DEMO_NOTE,
         unit: '%',
         targetValue: 75,

@@ -108,8 +108,10 @@ Any factor can be overridden when recording an emission. The form shows the sour
 
 | KPI type | Achieved | On Track | At Risk | Off Track |
 |---|---|---|---|---|
-| Lower is better (emissions, energy, water, waste, transport) | At or below target | — | Up to 10% above target | More than 10% above target |
-| Higher is better (renewable energy) | At or above target | At least 85% of target | At least 70% of target | Below 70% of target |
+| Lower is better (e.g. energy use, emissions, waste to landfill) | At or below target | — | Up to 10% above target | More than 10% above target |
+| Higher is better (e.g. renewable energy share, waste segregation rate) | At or above target | At least 85% of target | At least 70% of target | Below 70% of target |
+
+Each KPI chooses its own goal direction when it is defined. The default is "higher is better" for Renewable Energy and "lower is better" for every other category.
 
 ### Realized reduction
 

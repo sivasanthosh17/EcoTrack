@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 
+// Whether a KPI improves by going down or up; older KPIs fall back to the category default
+const getGoalDirection = (category, goalDirection) => {
+  if (goalDirection === 'lower' || goalDirection === 'higher') return goalDirection;
+  return category === 'Renewable Energy' ? 'higher' : 'lower';
+};
+
 const STATUS_BADGES = {
   Achieved: { bg: 'rgba(16, 185, 129, 0.15)', color: '#15803d', border: 'rgba(52, 211, 153, 0.4)', label: 'Achieved' },
   'On Track': { bg: 'rgba(6, 182, 212, 0.15)', color: '#0369a1', border: 'rgba(56, 189, 248, 0.4)', label: 'On Track' },
@@ -74,6 +80,7 @@ const KPIs = () => {
     id: null,
     kpiName: '',
     category: 'Emissions',
+    goalDirection: 'lower',
     description: '',
     unit: 'tCO2e',
     targetValue: '',
@@ -218,6 +225,7 @@ const KPIs = () => {
       id: k._id,
       kpiName: k.kpiName,
       category: k.category,
+      goalDirection: getGoalDirection(k.category, k.goalDirection),
       description: k.description || '',
       unit: k.unit,
       targetValue: k.targetValue,
@@ -277,12 +285,12 @@ const KPIs = () => {
   };
 
   // Calculate live rule-based status preview for Measurement form
-  const getPreviewStatus = (category, actual, target) => {
+  const getPreviewStatus = (category, actual, target, goalDirection) => {
     const val = Number(actual);
     const tgt = Number(target);
     if (isNaN(val) || actual === '') return 'Pending Evaluation';
 
-    const isIncrease = category === 'Renewable Energy';
+    const isIncrease = getGoalDirection(category, goalDirection) === 'higher';
     if (isIncrease) {
       if (val >= tgt) return 'Achieved';
       if (val >= tgt * 0.85) return 'On Track';
@@ -430,7 +438,7 @@ const KPIs = () => {
               </div>
               <div>
                 <span className="status-pill" style={{ fontSize: '0.95rem', padding: '0.4rem 0.9rem' }}>
-                  Evaluated Status: <strong>{getPreviewStatus(selectedKPI.category, measureForm.actualValue, selectedKPI.targetValue)}</strong>
+                  Evaluated Status: <strong>{getPreviewStatus(selectedKPI.category, measureForm.actualValue, selectedKPI.targetValue, selectedKPI.goalDirection)}</strong>
                 </span>
               </div>
             </div>
@@ -524,7 +532,11 @@ const KPIs = () => {
                 <select
                   className="form-input"
                   value={kpiForm.category}
-                  onChange={(e) => setKPIForm({ ...kpiForm, category: e.target.value })}
+                  onChange={(e) => setKPIForm({
+                    ...kpiForm,
+                    category: e.target.value,
+                    goalDirection: getGoalDirection(e.target.value)
+                  })}
                 >
                   <option value="Energy">Energy</option>
                   <option value="Water">Water</option>
@@ -573,6 +585,18 @@ const KPIs = () => {
                   onChange={(e) => setKPIForm({ ...kpiForm, targetValue: e.target.value })}
                   required
                 />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">Goal Direction</label>
+                <select
+                  className="form-input"
+                  value={kpiForm.goalDirection}
+                  onChange={(e) => setKPIForm({ ...kpiForm, goalDirection: e.target.value })}
+                >
+                  <option value="lower">Lower is better (e.g. energy use, emissions)</option>
+                  <option value="higher">Higher is better (e.g. recycling rate, solar share)</option>
+                </select>
               </div>
 
               <div className="form-group">
@@ -720,6 +744,9 @@ const KPIs = () => {
                     <span className="brand-badge">{k.category}</span>
                     <span style={{ color: 'var(--accent)', fontWeight: 600 }}>{k.department}</span>
                     <span style={{ color: 'var(--text-dim)' }}>{k.reportingFrequency}</span>
+                    <span style={{ color: 'var(--text-dim)' }}>
+                      {getGoalDirection(k.category, k.goalDirection) === 'higher' ? 'Higher is better' : 'Lower is better'}
+                    </span>
                   </div>
 
                   <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.25rem' }}>

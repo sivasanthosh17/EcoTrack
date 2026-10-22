@@ -3,27 +3,36 @@ import KPIMeasurement from '../models/KPIMeasurement.js';
 import { canAccessDepartment } from '../middleware/authMiddleware.js';
 
 /**
+ * Whether a KPI improves by going down ('lower') or up ('higher').
+ * Uses the KPI's own setting, falling back to the category default for older KPIs.
+ */
+export const getGoalDirection = (category, goalDirection) => {
+  if (goalDirection === 'lower' || goalDirection === 'higher') return goalDirection;
+  return category === 'Renewable Energy' ? 'higher' : 'lower';
+};
+
+/**
  * Transparent Rule-Based KPI Status Calculation Engine
  * @param {string} category - KPI Category
  * @param {number} actualValue - Latest measured value
  * @param {number} targetValue - Benchmark target value
  * @returns {string} Rule-based status ('Achieved', 'On Track', 'At Risk', 'Off Track', 'Pending Data')
  */
-export const calculateKPIStatus = (category, actualValue, targetValue) => {
+export const calculateKPIStatus = (category, actualValue, targetValue, goalDirection) => {
   if (actualValue === null || actualValue === undefined || isNaN(actualValue)) {
     return 'Pending Data';
   }
 
-  const isIncreaseGoal = category === 'Renewable Energy';
+  const isIncreaseGoal = getGoalDirection(category, goalDirection) === 'higher';
 
   if (isIncreaseGoal) {
-    // Higher actual value is better (e.g., Renewable Energy Adoption %)
+    // Higher actual value is better (e.g., Renewable Energy share %, Waste segregation rate %)
     if (actualValue >= targetValue) return 'Achieved';
     if (actualValue >= targetValue * 0.85) return 'On Track';
     if (actualValue >= targetValue * 0.70) return 'At Risk';
     return 'Off Track';
   } else {
-    // Lower actual value is better (e.g., Emissions, Waste, Water, Energy Reduction Targets)
+    // Lower actual value is better (e.g., Emissions, Energy use, Water use, Waste to landfill)
     // The target is a limit, so any value above it is not on track
     if (actualValue <= targetValue) return 'Achieved';
     if (actualValue <= targetValue * 1.10) return 'At Risk';
@@ -71,7 +80,10 @@ export const getKPIs = async (req, res) => {
 
         if (latestMeasurement) {
           currVal = latestMeasurement.actualValue;
-          evalStatus = calculateKPIStatus(k.category, currVal, k.targetValue);
+        }
+
+        if (currVal !== null && currVal !== undefined) {
+          evalStatus = calculateKPIStatus(k.category, currVal, k.targetValue, k.goalDirection);
 
           // Sync status in DB if changed
           if (k.status !== evalStatus || k.currentValue !== currVal) {
@@ -164,7 +176,8 @@ export const createKPI = async (req, res) => {
       unit,
       targetValue,
       reportingFrequency,
-      department
+      department,
+      goalDirection
     } = req.body;
 
     if (!kpiName || !category || !unit || targetValue === undefined || !department) {
@@ -182,9 +195,17 @@ export const createKPI = async (req, res) => {
       });
     }
 
+    if (goalDirection !== undefined && goalDirection !== '' && !['lower', 'higher'].includes(goalDirection)) {
+      return res.status(400).json({
+        status: 'error',
+        message: "Goal direction must be 'lower' or 'higher'."
+      });
+    }
+
     const kpi = await KPI.create({
       kpiName: kpiName.trim(),
       category,
+      goalDirection: getGoalDirection(category, goalDirection),
       description: description ? description.trim() : '',
       unit: unit.trim(),
       targetValue: target,
@@ -224,8 +245,16 @@ export const updateKPI = async (req, res) => {
       unit,
       targetValue,
       reportingFrequency,
-      department
+      department,
+      goalDirection
     } = req.body;
+
+    if (goalDirection !== undefined && goalDirection !== '' && !['lower', 'higher'].includes(goalDirection)) {
+      return res.status(400).json({
+        status: 'error',
+        message: "Goal direction must be 'lower' or 'higher'."
+      });
+    }
 
     const kpi = await KPI.findById(req.params.id);
 
@@ -242,6 +271,7 @@ export const updateKPI = async (req, res) => {
 
     if (kpiName) kpi.kpiName = kpiName.trim();
     if (category) kpi.category = category;
+    if (goalDirection) kpi.goalDirection = goalDirection;
     if (description !== undefined) kpi.description = description.trim();
     if (unit) kpi.unit = unit.trim();
     if (targetValue !== undefined) kpi.targetValue = Number(targetValue);
@@ -250,7 +280,7 @@ export const updateKPI = async (req, res) => {
 
     // Re-evaluate rule-based status with updated target
     if (kpi.currentValue !== null && kpi.currentValue !== undefined) {
-      kpi.status = calculateKPIStatus(kpi.category, kpi.currentValue, kpi.targetValue);
+      kpi.status = calculateKPIStatus(kpi.category, kpi.currentValue, kpi.targetValue, kpi.goalDirection);
     }
 
     const updatedKPI = await kpi.save();
@@ -347,7 +377,7 @@ export const addKPIMeasurement = async (req, res) => {
 
     // Update KPI current value and evaluate rule-based status
     kpi.currentValue = val;
-    kpi.status = calculateKPIStatus(kpi.category, val, kpi.targetValue);
+    kpi.status = calculateKPIStatus(kpi.category, val, kpi.targetValue, kpi.goalDirection);
     await kpi.save();
 
     const populatedMeasurement = await KPIMeasurement.findById(measurement._id).populate(
