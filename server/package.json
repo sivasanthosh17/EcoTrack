@@ -10,6 +10,7 @@
     "seed": "node seed.js",
     "seed:gcc": "node seed-gcc.js",
     "seed:gcc-demo": "node seed-gcc-demo.js",
+    "copy-to-atlas": "node copy-to-atlas.js",
     "test": "node --test"
   },
   "keywords": [],

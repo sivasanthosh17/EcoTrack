@@ -5,7 +5,7 @@ const Home = () => {
 
   useEffect(() => {
     const checkServer = async () => {
-      const base = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+      const base = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
       try {
         const res = await fetch(`${base}/health`);
         const data = await res.json();

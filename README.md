@@ -19,6 +19,7 @@ EcoTrack brings emissions accounting, carbon reduction projects, sustainability 
 - [Roles and permissions](#roles-and-permissions)
 - [How it works](#how-it-works)
 - [Getting started](#getting-started)
+- [Deploying to Vercel](#deploying-to-vercel)
 - [API reference](#api-reference)
 - [Project structure](#project-structure)
 - [Troubleshooting](#troubleshooting)
@@ -166,7 +167,7 @@ Created automatically when the server starts. The login page also has buttons th
 | Organization Admin | admin@ecotrack.org | admin123 |
 | Department Officer (Electrical) | officer@ecotrack.org | officer123 |
 
-These accounts and the autofill buttons are for demonstration. Remove them before deploying to a public server.
+These accounts and the autofill buttons are for demonstration. They also work on a deployed copy, so anyone with the link can sign in as the admin.
 
 ### Tests
 
@@ -174,6 +175,37 @@ These accounts and the autofill buttons are for demonstration. Remove them befor
 cd server
 npm test
 ```
+
+## Deploying to Vercel
+
+The repository deploys as a single Vercel project. The React build is served as static files, and the Express API runs as a serverless function under `/api`, so the site and its API share one address. `vercel.json` and `api/index.js` hold this setup.
+
+Vercel cannot run a database, so the deployed site uses MongoDB Atlas.
+
+1. **Create the database.** Create a free MongoDB Atlas cluster in AWS N. Virginia (us-east-1), the region closest to Vercel's default. Add a database user, and under Network Access allow `0.0.0.0/0`, because Vercel has no fixed IP address.
+2. **Get the connection string.** In Atlas, choose Connect, then Drivers. Put your password in, and add the database name `ecotrack_db` after `.net/`:
+
+   ```
+   mongodb+srv://USER:PASSWORD@cluster0.xxxxx.mongodb.net/ecotrack_db?retryWrites=true&w=majority
+   ```
+
+3. **Copy your local data to Atlas.** With local MongoDB running:
+
+   ```bash
+   cd server
+   node copy-to-atlas.js "<connection string>"
+   ```
+
+   This copies every account, department and record, so the deployed site matches localhost. Run it again any time to reset the online data.
+
+4. **Create the Vercel project.** Import the GitHub repository and keep the root directory as the repository root. Add two environment variables, then deploy:
+
+   | Name | Value |
+   |---|---|
+   | `MONGODB_URI` | the connection string from step 2 |
+   | `JWT_SECRET` | a long random string |
+
+Pushing to `main` redeploys the site automatically.
 
 ## API reference
 
@@ -208,6 +240,8 @@ All routes are under `/api`. Except for login and the health check, every route 
 ## Project structure
 
 ```
+api/index.js              Vercel entry point for the Express API
+vercel.json               Vercel build and routing settings
 client/                   React frontend
   src/pages/              one file per screen
   src/components/         sidebar and route protection
@@ -218,7 +252,8 @@ server/                   Express API
   routes/                 API routes
   middleware/             token, role and department checks
   data/                   Greater Chennai Corporation department data
-  tests/                  authorization tests
+  tests/                  authorization and KPI status tests
+  copy-to-atlas.js        copies local data to MongoDB Atlas for deployment
 docs/screenshots/         images used in this README
 ```
 
@@ -231,6 +266,8 @@ docs/screenshots/         images used in this README
 | Data disappears after restarting the server | The in-memory database is in use. Install and run MongoDB, or set `MONGODB_URI` to a MongoDB Atlas connection string. |
 | Login page says your session has expired | Your token expired or `JWT_SECRET` changed. Sign in again. |
 | Frontend cannot reach the API | Check that the backend is running and that `VITE_API_BASE_URL` in `client/.env` matches its address. |
+| Deployed site says `Database is initializing or offline` | Check `MONGODB_URI` in the Vercel project settings, and that Atlas Network Access allows `0.0.0.0/0`. Redeploy after changing a variable. |
+| Deployed site has no data | Run `copy-to-atlas.js` with the same connection string that Vercel uses. |
 
 ## Author
 

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "npm install --prefix client && MONGOMS_DISABLE_POSTINSTALL=1 npm install --prefix server",
+  "buildCommand": "npm run build --prefix client",
+  "outputDirectory": "client/dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}

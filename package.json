@@ -1,0 +1,6 @@
+{
+  "name": "ecotrack",
+  "private": true,
+  "description": "Root package for the Vercel deployment. The app itself lives in client/ and server/.",
+  "type": "module"
+}

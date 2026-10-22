@@ -9,7 +9,7 @@ export const AuthProvider = ({ children }) => {
   // Explains on the login page why the user was signed out
   const [authNotice, setAuthNotice] = useState('');
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
 
   // Any 401 from the API means the session is no longer valid (expired token or
   // deactivated account): sign out so ProtectedRoute sends the user to /login

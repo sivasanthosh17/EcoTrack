@@ -72,8 +72,12 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Start Express Server
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`[Server] EcoTrack backend running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
-});
+// Start Express Server (on Vercel, the platform calls the exported app instead)
+if (!process.env.VERCEL) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`[Server] EcoTrack backend running on port ${PORT} in ${process.env.NODE_ENV || 'development'} mode`);
+  });
+}
+
+export default app;

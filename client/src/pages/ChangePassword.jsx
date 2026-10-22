@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 
 const ChangePassword = () => {
   const { user, token } = useAuth();
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || (import.meta.env.DEV ? 'http://localhost:5000/api' : '/api');
 
   const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' });
   const [message, setMessage] = useState({ type: '', text: '' });
